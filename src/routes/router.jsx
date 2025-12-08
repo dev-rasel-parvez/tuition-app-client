@@ -10,7 +10,8 @@ import Login from "../pages/Auth/Login/Login";
 import Register from "../pages/Auth/Register/Register";
 import UserDashboardHome from "../pages/Dashboard/DashboardHome/UserDashboardHome";
 import DashboardLayout from "../layouts/DashboardLayout";
-
+import TuitionsPost from "../pages/Tuitions/TuitionsPost";
+import TuitionDetails from "../pages/Tuitions/TuitionDetails";
 
 export const router = createBrowserRouter([
   {
@@ -25,7 +26,6 @@ export const router = createBrowserRouter([
     ]
   },
 
-  // Auth Pages
   {
     path: "/",
     Component: AuthLayout,
@@ -35,16 +35,22 @@ export const router = createBrowserRouter([
     ]
   },
 
-  // Dashboard
   {
     path: "dashboard",
     element: <DashboardLayout />,
     children: [
+      { index: true, element: <UserDashboardHome /> },
+
+      // FIXED: remove dashboard/dashboard prefix
+      { path: "post-tuition", element: <TuitionsPost /> },
       {
-        index: true,
-        element: <UserDashboardHome />
+        path: "available-tuitions",
+        element: <AvailableTuitions />,
       },
+      {
+        path: "tuition/:id",
+        element: <TuitionDetails />,
+      }
     ]
   }
 ]);
-

@@ -3,6 +3,7 @@ import useAuth from "../../../hooks/useAuth";
 import { Link, useLocation, useNavigate } from "react-router";
 import SocialLogin from "../SocialLogin/SocialLogin";
 import axios from "axios";
+import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const Register = () => {
@@ -42,19 +43,35 @@ const Register = () => {
         name: data.name,
         email: data.email,
         phone: data.phone,
-        role: data.role, // Student or Tutor
+        role: data.role,
         photoURL: photoURL,
         createdAt: new Date(),
       };
 
-      const dbRes = await axiosSecure.post("/users", userInfo);
-      console.log("User saved to database", dbRes.data);
+      await axiosSecure.post("/users", userInfo);
 
-      // 5. Redirect after register
-      const redirectPath = location.state?.from?.pathname || "/";
+      // 🔥 SweetAlert Success
+      Swal.fire({
+        icon: "success",
+        title: "Account Created!",
+        text: "Welcome to eTuitionBd",
+        timer: 1800,
+        position: "top-end",
+        showConfirmButton: false,
+      });
+
+      // 🔥 Redirect
+      const redirectPath = location.state?.from?.pathname || "/dashboard";
       navigate(redirectPath, { replace: true });
+
     } catch (error) {
-      console.error(error);
+      // ❌ SweetAlert Error
+      Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        text: error.message,
+        confirmButtonColor: "#d33",
+      });
     }
   };
 
@@ -65,7 +82,6 @@ const Register = () => {
 
       <form className="card-body" onSubmit={handleSubmit(handleRegistration)}>
         <fieldset className="fieldset">
-
           {/* Name */}
           <label className="label">Full Name</label>
           <input
@@ -96,7 +112,7 @@ const Register = () => {
           />
           {errors.phone && <p className="text-red-500">Phone is required.</p>}
 
-          {/* Role Selection */}
+          {/* Role */}
           <label className="label">Register As</label>
           <select
             {...register("role", { required: true })}
@@ -107,11 +123,11 @@ const Register = () => {
           </select>
           {errors.role && <p className="text-red-500">Select a role.</p>}
 
-          {/* Photo Upload */}
+          {/* Photo */}
           <label className="label">Profile Photo</label>
           <input
             type="file"
-            {...register("photo", { required: false })}
+            {...register("photo")}
             className="file-input"
           />
 
@@ -123,7 +139,7 @@ const Register = () => {
               required: true,
               minLength: 6,
               pattern:
-                /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/
+                /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
             })}
             className="input"
             placeholder="Password"
@@ -142,9 +158,8 @@ const Register = () => {
             </p>
           )}
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button className="btn btn-neutral mt-4">Register</button>
-
         </fieldset>
 
         <p>

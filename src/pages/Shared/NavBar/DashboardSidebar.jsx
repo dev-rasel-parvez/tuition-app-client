@@ -1,146 +1,111 @@
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import React, { useContext } from "react";
+import { NavLink, Link } from "react-router-dom";
 import {
-    FaHome,
-    FaBook,
-    FaUserGraduate,
-    FaChalkboardTeacher,
-    FaRegClipboard,
-    FaUserCog,
-    FaCog,
-    FaSignOutAlt,
+  FaHome,
+  FaBook,
+  FaPlusCircle,
+  FaRegClipboard,
+  FaUserGraduate,
+  FaMoneyCheckAlt,
+  FaUsersCog,
+  FaListAlt,
+  FaChartPie,
+  FaSignOutAlt
 } from "react-icons/fa";
+
 import ThemeSwitcher from "../../../contexts/ThemeContext/ThemeSwitcher";
+import { AuthContext } from "../../../contexts/AuthContext/AuthContext";
+import useRole from "../../../hooks/useRole";
 
-const DashboardSidebar = ({ onLogout }) => {
-    return (
-        <aside className="w-64 bg-[var(--color-bg-soft)] h-screen shadow-md hidden md:flex flex-col p-5 sticky top-0">
+const DashboardSidebar = ({ closeSidebar }) => {
+  const { logOut } = useContext(AuthContext);
+  const { role } = useRole();
 
-            {/* Sidebar Header */}
-            <Link
-                to="/"
-                className="text-2xl font-bold mb-5"
-                style={{ color: "var(--color-accent)" }}
-            >
-                eTuitionBd
-            </Link>
+  const NavItem = ({ to, text, icon, end }) => (
+    <NavLink
+      to={to}
+      end={end}
+      onClick={closeSidebar}
+      className={({ isActive }) =>
+        `flex items-center gap-3 p-3 rounded-lg transition 
+        ${isActive
+          ? "bg-[var(--color-accent)] text-white"
+          : "hover:bg-[var(--color-bg)] text-[var(--color-text-primary)]"
+        }`
+      }
+    >
+      {icon}
+      {text}
+    </NavLink>
+  );
 
-            {/* Navigation Menu */}
-            <nav className="flex flex-col gap-2 text-[var(--color-text-primary)]">
+  return (
+    <aside className="w-64 h-full bg-[var(--color-bg-soft)] text-[var(--color-text-primary)] p-5 flex flex-col shadow-lg">
 
-                <NavLink
-                    to="/dashboard"
-                    className={({ isActive }) =>
-                        `flex items-center gap-3 p-3 rounded-lg transition ${isActive
-                            ? "bg-[var(--color-accent)] text-white"
-                            : "hover:bg-[var(--color-bg)]"
-                        }`
-                    }
-                >
-                    <FaHome />
-                    Home
-                </NavLink>
+      <Link
+        to="/"
+        onClick={closeSidebar}
+        className="text-2xl font-bold mb-6 text-[var(--color-accent)]"
+      >
+        eTuitionBd
+      </Link>
 
-                <NavLink
-                    to="/dashboard/my-tuitions"
-                    className={({ isActive }) =>
-                        `flex items-center gap-3 p-3 rounded-lg transition ${isActive
-                            ? "bg-[var(--color-accent)] text-white"
-                            : "hover:bg-[var(--color-bg)]"
-                        }`
-                    }
-                >
-                    <FaBook />
-                    My Tuitions
-                </NavLink>
+      {/* STUDENT MENU */}
+      {role === "student" && (
+        <>
+          <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+            🎓 Student Menu
+          </h3>
 
-                <NavLink
-                    to="/dashboard/applications"
-                    className={({ isActive }) =>
-                        `flex items-center gap-3 p-3 rounded-lg transition ${isActive
-                            ? "bg-[var(--color-accent)] text-white"
-                            : "hover:bg-[var(--color-bg)]"
-                        }`
-                    }
-                >
-                    <FaRegClipboard />
-                    Applications
-                </NavLink>
+          <NavItem to="/dashboard" text="Home" icon={<FaHome />} end />
+          <NavItem to="/dashboard/post-tuition" text="Post Tuition" icon={<FaPlusCircle />} />
+          <NavItem to="/dashboard/my-tuitions" text="My Tuitions" icon={<FaBook />} />
+          <NavItem to="/dashboard/applications" text="Applications" icon={<FaRegClipboard />} />
+          <NavItem to="/dashboard/payments" text="Payments" icon={<FaMoneyCheckAlt />} />
+          <NavItem to="/dashboard/profile" text="Profile Settings" icon={<FaUserGraduate />} />
+        </>
+      )}
 
-                <NavLink
-                    to="/dashboard/profile"
-                    className={({ isActive }) =>
-                        `flex items-center gap-3 p-3 rounded-lg transition ${isActive
-                            ? "bg-[var(--color-accent)] text-white"
-                            : "hover:bg-[var(--color-bg)]"
-                        }`
-                    }
-                >
-                    <FaUserGraduate />
-                    My Profile
-                </NavLink>
+      {/* TUTOR MENU */}
+      {role === "tutor" && (
+        <>
+          <h3 className="font-semibold text-lg mb-3">🧑‍🏫 Tutor Menu</h3>
 
-                <NavLink
-                    to="/dashboard/become-tutor"
-                    className={({ isActive }) =>
-                        `flex items-center gap-3 p-3 rounded-lg transition ${isActive
-                            ? "bg-[var(--color-accent)] text-white"
-                            : "hover:bg-[var(--color-bg)]"
-                        }`
-                    }
-                >
-                    <FaChalkboardTeacher />
-                    Become a Tutor
-                </NavLink>
+          <NavItem to="/dashboard" text="Home" icon={<FaHome />} end />
+          <NavItem to="/dashboard/my-applications" text="My Applications" icon={<FaRegClipboard />} />
+          <NavItem to="/dashboard/ongoing-tuitions" text="Ongoing Tuitions" icon={<FaBook />} />
+          <NavItem to="/dashboard/revenue" text="Revenue History" icon={<FaMoneyCheckAlt />} />
+          <NavItem to="/dashboard/profile" text="Profile Settings" icon={<FaUserGraduate />} />
+        </>
+      )}
 
-                {/* Admin section (optional) */}
-                <NavLink
-                    to="/dashboard/admin"
-                    className={({ isActive }) =>
-                        `flex items-center gap-3 p-3 rounded-lg transition ${isActive
-                            ? "bg-[var(--color-accent)] text-white"
-                            : "hover:bg-[var(--color-bg)]"
-                        }`
-                    }
-                >
-                    <FaUserCog />
-                    Admin Panel
-                </NavLink>
+      {/* ADMIN MENU */}
+      {role === "admin" && (
+        <>
+          <h3 className="font-semibold text-lg mb-3">🛠 Admin Menu</h3>
 
-                {/* Settings */}
-                <NavLink
-                    to="/dashboard/settings"
-                    className={({ isActive }) =>
-                        `flex items-center gap-3 p-3 rounded-lg transition ${isActive
-                            ? "bg-[var(--color-accent)] text-white"
-                            : "hover:bg-[var(--color-bg)]"
-                        }`
-                    }
-                >
-                    <FaCog />
-                    Settings
-                </NavLink>
+          <NavItem to="/dashboard" text="Dashboard Home" icon={<FaHome />} end />
+          <NavItem to="/dashboard/users" text="User Management" icon={<FaUsersCog />} />
+          <NavItem to="/dashboard/tuitions" text="Tuition Management" icon={<FaListAlt />} />
+          <NavItem to="/dashboard/reports" text="Reports & Analytics" icon={<FaChartPie />} />
+        </>
+      )}
 
+      <div className="mt-6">
+        <ThemeSwitcher />
+      </div>
 
-
-                {/* Theme Toggle Styled */}
-                <div className="flex items-center -mt-4 p-4 rounded-lg cursor-pointer transition  text-[64px]">
-                    <ThemeSwitcher />
-                    
-                </div>
-
-
-                {/* Logout Button */}
-                <button
-                    onClick={onLogout}
-                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-red-100 hover:text-red-600 mt-5 transition"
-                >
-                    <FaSignOutAlt />
-                    Logout
-                </button>
-            </nav>
-        </aside>
-    );
+      <button
+        onClick={() => {
+          logOut();
+          closeSidebar();
+        }}
+        className="flex items-center gap-3 p-3 mt-auto rounded-lg hover:bg-red-100 text-red-600"
+      >
+        <FaSignOutAlt /> Logout
+      </button>
+    </aside>
+  );
 };
 
 export default DashboardSidebar;

@@ -2,163 +2,170 @@ import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const TuitionsPost = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset } = useForm();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleTuitionPost = async (data) => {
     data.postedBy = user?.email;
-    data.createdAt = new Date();
 
-    Swal.fire({
+    const confirm = await Swal.fire({
       title: "Confirm Tuition Post?",
       text: "Do you want to publish this tuition requirement?",
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Yes, Publish",
-      cancelButtonText: "Cancel",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const res = await axiosSecure.post("/tuitions", data);
-
-        if (res.data.insertedId) {
-          Swal.fire({
-            icon: "success",
-            title: "Tuition Posted Successfully!",
-            timer: 2000,
-            showConfirmButton: false,
-          });
-        }
-      }
     });
+
+    if (!confirm.isConfirmed) return;
+
+    const res = await axiosSecure.post("/tuitions", data);
+
+    if (res.data.insertedId) {
+      Swal.fire({
+        icon: "success",
+        title: "Tuition Posted Successfully!",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+
+      reset(); // CLEAR FORM
+      navigate("/dashboard/my-tuitions"); // REDIRECT
+    }
   };
 
   return (
-    <div className="">
-      <h2 className="text-4xl font-bold">Post Tuition Requirement</h2>
+    <div>
+      <h2 className="text-4xl font-bold mb-6">Post Your Tuition!</h2>
 
-      <form
-        onSubmit={handleSubmit(handleTuitionPost)}
-        className="mt-10 p-4 text-black"
-      >
-        {/* Tuition Basic Info */}
+      <form onSubmit={handleSubmit(handleTuitionPost)} className="space-y-10">
+
+        {/* GRID 2 COLUMNS */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <fieldset className="fieldset">
-            <label className="label">Class / Grade</label>
+
+          {/* LEFT SIDE */}
+          <div>
+            <h3 className="text-2xl font-semibold mb-6">Tutor want for</h3>
+
+            <label className="label mt-2">Tuition Title</label>
             <input
-              type="text"
+              {...register("title")}
+              placeholder="Example: Class 5 Bangla Tutor Needed"
+              className="input input-bordered w-full"
+            />
+
+            <label className="label mt-2">Class / Grade</label>
+            <input
               {...register("class")}
-              className="input"
-              placeholder="Example: Class 8 / O-Level"
+              placeholder="Example: Class 5"
+              className="input input-bordered w-full"
             />
 
-            <label className="label">Subject(s)</label>
+            <label className="label mt-2">Subject(s)</label>
             <input
-              type="text"
               {...register("subjects")}
-              className="input"
-              placeholder="Math, English, Physics"
+              placeholder="Bangla, Math, English"
+              className="input input-bordered w-full"
             />
 
-            <label className="label">Budget (Monthly)</label>
+            <label className="label mt-2">Budget (Monthly)</label>
             <input
               type="number"
               {...register("budget")}
-              className="input"
-              placeholder="Example: 5000–8000"
+              placeholder="5000–8000"
+              className="input input-bordered w-full"
             />
 
-            <label className="label">Location / Area</label>
+            <label className="label mt-2">Location / Area</label>
             <input
-              type="text"
               {...register("location")}
-              className="input"
-              placeholder="Mirpur, Dhanmondi, etc."
+              placeholder="Mirpur, Dhanmondi"
+              className="input input-bordered w-full"
             />
 
-            <label className="label">Preferred Schedule</label>
+            <label className="label mt-2">Preferred Schedule</label>
             <input
-              type="text"
               {...register("schedule")}
-              className="input"
-              placeholder="3 days/week, Evening"
+              placeholder="Example: 3 days/week, evening"
+              className="input input-bordered w-full"
             />
-          </fieldset>
+          </div>
 
-          {/* Tutor Requirement Section */}
-          <fieldset className="fieldset">
-            <h3 className="text-2xl font-semibold">Tutor Requirements</h3>
+          {/* RIGHT SIDE */}
+          <div>
+            <h3 className="text-2xl font-semibold mb-6">Tutor Requirements</h3>
 
-            <label className="label">SSC Result</label>
+            {/* SSC + HSC */}
+            <div className="">
+              <div>
+                <label className="label mt-2">SSC Result</label>
+                <input
+                  {...register("sscResult")}
+                  placeholder="Example: 4.50"
+                  className="input input-bordered w-full"
+                />
+              </div>
+
+              <div>
+                <label className="label mt-2">HSC Result</label>
+                <input
+                  {...register("hscResult")}
+                  placeholder="Example: 4.75"
+                  className="input input-bordered w-full"
+                />
+              </div>
+            </div>
+
+            <label className="label mt-2">University</label>
             <input
-              type="text"
-              {...register("sscResult")}
-              className="input"
-              placeholder="GPA / Grade"
-            />
-
-            <label className="label">HSC Result</label>
-            <input
-              type="text"
-              {...register("hscResult")}
-              className="input"
-              placeholder="GPA / Grade"
-            />
-
-            <label className="label">University</label>
-            <input
-              type="text"
               {...register("university")}
-              className="input"
               placeholder="DU / BUET / NSU / AIUB"
+              className="input input-bordered w-full"
             />
 
-            <label className="label">Department / Subject</label>
+            <label className="label mt-2">Department / Subject</label>
             <input
-              type="text"
               {...register("uniSubject")}
-              className="input"
               placeholder="CSE / English / BBA"
+              className="input input-bordered w-full"
             />
 
-            <label className="label">Running Year</label>
-            <select {...register("runningYear")} className="select select-bordered">
-              <option value="1st Year">1st Year</option>
-              <option value="2nd Year">2nd Year</option>
-              <option value="3rd Year">3rd Year</option>
-              <option value="4th Year">4th Year</option>
-              <option value="Masters">Masters</option>
+            <label className="label mt-2">Running Year</label>
+            <select {...register("runningYear")} className="select select-bordered w-full">
+              <option value="">Select Running Year</option>
+              <option>1st Year</option>
+              <option>2nd Year</option>
+              <option>3rd Year</option>
+              <option>4th Year</option>
+              <option>Masters</option>
             </select>
 
-            <label className="label">Years of Experience</label>
+            <label className="label mt-2">Years of Experience</label>
             <input
               type="number"
               {...register("experience")}
-              className="input"
-              placeholder="Example: 2 years"
+              placeholder="Example: 2"
+              className="input input-bordered w-full"
             />
-          </fieldset>
+          </div>
         </div>
 
-        {/* Student Note */}
-        <div className="mt-12">
-          <label className="label">Additional Notes (Optional)</label>
+        {/* NOTES */}
+        <div>
+          <label className="label mt-2">Additional Notes (Optional)</label>
           <textarea
             {...register("notes")}
+            placeholder="Any additional requirements..."
             rows={4}
             className="textarea textarea-bordered w-full"
-            placeholder="Any extra instructions for tutor…"
           ></textarea>
         </div>
 
-        {/* Submit Button */}
-        <input
-          type="submit"
-          className="btn btn-primary mt-8 text-black"
-          value="Post Tuition"
-        />
+        <button className="btn btn-primary">Post Tuition</button>
       </form>
     </div>
   );
