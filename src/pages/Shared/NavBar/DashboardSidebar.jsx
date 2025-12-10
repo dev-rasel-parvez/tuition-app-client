@@ -72,10 +72,12 @@ const DashboardSidebar = ({ closeSidebar }) => {
           <h3 className="font-semibold text-lg mb-3">🧑‍🏫 Tutor Menu</h3>
 
           <NavItem to="/dashboard" text="Home" icon={<FaHome />} end />
-          <NavItem to="/dashboard/my-applications" text="My Applications" icon={<FaRegClipboard />} />
-          <NavItem to="/dashboard/ongoing-tuitions" text="Ongoing Tuitions" icon={<FaBook />} />
-          <NavItem to="/dashboard/revenue" text="Revenue History" icon={<FaMoneyCheckAlt />} />
-          <NavItem to="/dashboard/profile" text="Profile Settings" icon={<FaUserGraduate />} />
+          <NavItem to="/dashboard/tutor/available-tuitions" text=" Available Tuitions" icon={<FaUserGraduate />} />
+          <NavItem to="/dashboard/tutor/applications" text="My Applications" icon={<FaRegClipboard />} />
+          <NavItem to="/dashboard/tutor/ongoing-tuitions" text="Ongoing Tuitions" icon={<FaBook />} />
+          <NavItem to="/dashboard/tutor/revenue" text="Revenue History" icon={<FaMoneyCheckAlt />} />
+          <NavItem to="/dashboard/tutor/profile" text="Profile Settings" icon={<FaUserGraduate />} />
+          
         </>
       )}
 

@@ -21,6 +21,15 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import UserDashboardHome from "../pages/Dashboard/DashboardHome/UserDashboardHome";
 import TuitionsPost from "../pages/Tuitions/TuitionsPost";
 
+// -------------------------
+// TUTOR DASHBOARD COMPONENTS
+// -------------------------
+import MyApplications from "../pages/TutorDashboard/MyApplications";
+import OngoingTuitions from "../pages/TutorDashboard/OngoingTuitions";
+import RevenueHistory from "../pages/TutorDashboard/RevenueHistory";
+import TutorDetails from "../pages/Tutors/TutorDetails";
+import TutorAvailableTuitions from "../pages/TutorDashboard/TutorAvailableTuitions";
+
 export const router = createBrowserRouter([
 
   // ============================================
@@ -36,8 +45,9 @@ export const router = createBrowserRouter([
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
 
-      // Public tuition details (now uses tuitionId, NOT _id)
-      { path: "tuitions/:tuitionId", element: <TuitionDetails /> }
+      // Public tuition details (now uses tuitionId)
+      { path: "tuitions/:tuitionId", element: <TuitionDetails /> },
+      { path: "tutors/:id", element: <TutorDetails /> }
 
     ]
   },
@@ -63,20 +73,23 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <UserDashboardHome /> },
 
-      // Post Tuition
+      // --------------------------
+      // STUDENT DASHBOARD ROUTES
+      // --------------------------
       { path: "post-tuition", element: <TuitionsPost /> },
-
-      // My Tuitions
       { path: "my-tuitions", element: <MyTuitions /> },
-
-      // Single my tuition details (uses tuitionId)
       { path: "my-tuitions/:tuitionId", element: <MyTuitionsDetails /> },
-
-      // Edit tuition (uses tuitionId)
       { path: "edit-tuition/:tuitionId", element: <EditTuition /> },
-
-      // Applications (uses tuitionId)
       { path: "applications/:tuitionId", element: <Applications /> },
+
+      // --------------------------
+      // TUTOR DASHBOARD ROUTES
+      // --------------------------
+      { path: "tutor/applications", element: <MyApplications /> },
+      { path: "tutor/ongoing-tuitions", element: <OngoingTuitions /> },
+      { path: "tutor/revenue", element: <RevenueHistory /> },
+      { path: "tutor/available-tuitions", element: <TutorAvailableTuitions /> },
+      { path: "tutor/tuitions/:tuitionId", element: <TuitionDetails /> },
     ]
   }
 

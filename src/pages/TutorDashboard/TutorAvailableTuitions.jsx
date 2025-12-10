@@ -193,7 +193,7 @@ const AvailableTuitions = () => {
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {tuitions.map((t) => (
           <Link
-            to={`/tuitions/${t.tuitionId}`}
+            to={`tutor/tuitions/${t.tuitionId}`}
             key={t._id}
             className="bg-white p-6 rounded-xl shadow hover:shadow-2xl transition border"
           >

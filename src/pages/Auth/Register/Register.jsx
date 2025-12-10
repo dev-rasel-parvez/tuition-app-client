@@ -5,20 +5,23 @@ import SocialLogin from "../SocialLogin/SocialLogin";
 import axios from "axios";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { useState } from "react";
 
 const Register = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const { registerUser, updateUserProfile } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
 
+  const selectedRole = watch("role"); // Detect selected role
+
   const handleRegistration = async (data) => {
     try {
-      // 1. Create Firebase User
+      // 1. Create Firebase Auth User
       const result = await registerUser(data.email, data.password);
 
-      // 2. Upload profile image (optional)
+      // 2. Upload Profile Photo
       let photoURL = "";
       if (data.photo?.length > 0) {
         const formData = new FormData();
@@ -32,13 +35,13 @@ const Register = () => {
         photoURL = imgRes.data.data.url;
       }
 
-      // 3. Update Firebase Profile
+      // 3. Firebase Profile Update
       await updateUserProfile({
         displayName: data.name,
         photoURL: photoURL,
       });
 
-      // 4. Save user in MongoDB
+      // 4. Prepare MongoDB user object
       const userInfo = {
         name: data.name,
         email: data.email,
@@ -48,9 +51,21 @@ const Register = () => {
         createdAt: new Date(),
       };
 
+      // 5. Add Tutor Only Fields
+      if (data.role === "tutor") {
+        userInfo.university = data.university;
+        userInfo.department = data.department;
+        userInfo.experience = data.experience;
+        userInfo.runningYear = data.runningYear;
+        userInfo.ssc = data.ssc;
+        userInfo.hsc = data.hsc;
+        userInfo.contactEmail = data.contactEmail;   // NEW FIELD
+        userInfo.contactPhone = data.contactPhone;   // NEW FIELD
+      }
+
+      // 6. Save to MongoDB
       await axiosSecure.post("/users", userInfo);
 
-      // 🔥 SweetAlert Success
       Swal.fire({
         icon: "success",
         title: "Account Created!",
@@ -60,12 +75,9 @@ const Register = () => {
         showConfirmButton: false,
       });
 
-      // 🔥 Redirect
-      const redirectPath = location.state?.from?.pathname || "/dashboard";
-      navigate(redirectPath, { replace: true });
+      navigate(location.state?.from?.pathname || "/dashboard", { replace: true });
 
     } catch (error) {
-      // ❌ SweetAlert Error
       Swal.fire({
         icon: "error",
         title: "Registration Failed",
@@ -77,12 +89,13 @@ const Register = () => {
 
   return (
     <div className="card bg-base-100 pt-4 w-full mx-auto max-w-sm shrink-0 shadow-2xl">
-      <h3 className="text-3xl text-center">Create Your Account</h3>
+      <h3 className="text-3xl text-center font-bold">Create Your Account</h3>
       <p className="text-center">Register to continue</p>
 
       <form className="card-body" onSubmit={handleSubmit(handleRegistration)}>
         <fieldset className="fieldset">
-          {/* Name */}
+
+          {/* FULL NAME */}
           <label className="label">Full Name</label>
           <input
             type="text"
@@ -92,7 +105,7 @@ const Register = () => {
           />
           {errors.name && <p className="text-red-500">Name is required.</p>}
 
-          {/* Email */}
+          {/* EMAIL */}
           <label className="label">Email Address</label>
           <input
             type="email"
@@ -102,7 +115,7 @@ const Register = () => {
           />
           {errors.email && <p className="text-red-500">Email is required.</p>}
 
-          {/* Phone */}
+          {/* PHONE */}
           <label className="label">Phone Number</label>
           <input
             type="text"
@@ -112,65 +125,74 @@ const Register = () => {
           />
           {errors.phone && <p className="text-red-500">Phone is required.</p>}
 
-          {/* Role */}
+          {/* ROLE SELECT */}
           <label className="label">Register As</label>
-          <select
-            {...register("role", { required: true })}
-            className="select select-bordered"
-          >
-            <option value="student">Student/Guardians</option>
+          <select {...register("role", { required: true })} className="select select-bordered">
+            <option value="student">Student / Guardian</option>
             <option value="tutor">Tutor</option>
           </select>
-          {errors.role && <p className="text-red-500">Select a role.</p>}
 
-          {/* Photo */}
+          {/* ------------------------------ */}
+          {/* TUTOR EXTRA FIELDS */}
+          {/* ------------------------------ */}
+          {selectedRole === "tutor" && (
+            <div className="space-y-3 mt-4 border p-3 rounded-lg bg-gray-50">
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input {...register("university", { required: true })} className="input input-bordered" placeholder="University" />
+                <input {...register("department", { required: true })} className="input input-bordered" placeholder="Department" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input {...register("experience", { required: true })} className="input input-bordered" placeholder="Experience (years)" />
+                <input {...register("runningYear", { required: true })} className="input input-bordered" placeholder="Running Year" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input {...register("ssc", { required: true })} className="input input-bordered" placeholder="SSC Result" />
+                <input {...register("hsc", { required: true })} className="input input-bordered" placeholder="HSC Result" />
+              </div>
+
+              {/* NEW CONTACT FIELDS */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input
+                  {...register("contactEmail", { required: true })}
+                  className="input input-bordered"
+                  placeholder="Tutor Contact Email"
+                />
+
+                <input
+                  {...register("contactPhone", { required: true })}
+                  className="input input-bordered"
+                  placeholder="Tutor Contact Phone"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* PHOTO */}
           <label className="label">Profile Photo</label>
-          <input
-            type="file"
-            {...register("photo")}
-            className="file-input"
-          />
+          <input type="file" {...register("photo")} className="file-input" />
 
-          {/* Password */}
+          {/* PASSWORD */}
           <label className="label">Password</label>
           <input
             type="password"
             {...register("password", {
               required: true,
               minLength: 6,
-              pattern:
-                /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
+              pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/
             })}
             className="input"
             placeholder="Password"
           />
-          {errors.password?.type === "required" && (
-            <p className="text-red-500">Password is required.</p>
-          )}
-          {errors.password?.type === "minLength" && (
-            <p className="text-red-500">
-              Password must be at least 6 characters.
-            </p>
-          )}
-          {errors.password?.type === "pattern" && (
-            <p className="text-red-500">
-              Password must include uppercase, lowercase, number & special character.
-            </p>
-          )}
 
-          {/* Submit */}
           <button className="btn btn-neutral mt-4">Register</button>
         </fieldset>
 
-        <p>
+        <p className="text-center mt-2">
           Already have an account?{" "}
-          <Link
-            state={location.state}
-            className="text-blue-400 underline"
-            to="/login"
-          >
-            Login
-          </Link>
+          <Link to="/login" className="text-blue-500 underline">Login</Link>
         </p>
       </form>
 
