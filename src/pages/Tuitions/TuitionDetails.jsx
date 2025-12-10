@@ -5,16 +5,22 @@ import Swal from "sweetalert2";
 import useAuth from "../../hooks/useAuth";
 
 const TuitionDetails = () => {
-  const { id } = useParams();
+  const { tuitionId } = useParams();   // ✅ Correct param
   const [tuition, setTuition] = useState(null);
   const { user } = useAuth();
 
+  // Load tuition details by tuitionId
   useEffect(() => {
-    axios.get(`/tuitions/${id}`).then((res) => setTuition(res.data));
-  }, [id]);
+    axios.get(`/tuitions/${tuitionId}`).then((res) => setTuition(res.data));
+  }, [tuitionId]);
 
+  // Apply function (using tuitionId correctly)
   const apply = async () => {
-    const res = await axios.post(`/tuitions/${id}/apply`, {
+    if (!user?.email) {
+      return Swal.fire("Login Required", "Please login to apply.", "warning");
+    }
+
+    const res = await axios.post(`/tuitions/${tuitionId}/apply`, {
       tutorEmail: user.email,
       tutorName: user.displayName,
     });
@@ -29,7 +35,9 @@ const TuitionDetails = () => {
   return (
     <div className="p-8 max-w-3xl mx-auto">
 
-      <h1 className="text-4xl font-bold mb-6">{tuition.class} Tuition</h1>
+      <h1 className="text-4xl font-bold mb-6">
+        {tuition.class} Tuition Details
+      </h1>
 
       <div className="space-y-3">
         <p><strong>Subjects:</strong> {tuition.subjects}</p>

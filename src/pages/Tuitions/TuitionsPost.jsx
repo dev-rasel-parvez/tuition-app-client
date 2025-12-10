@@ -33,8 +33,10 @@ const TuitionsPost = () => {
         showConfirmButton: false,
       });
 
-      reset(); // CLEAR FORM
-      navigate("/dashboard/my-tuitions"); // REDIRECT
+      reset();
+
+      // Redirect to My Tuitions (tuitionId auto-handled by backend)
+      navigate("/dashboard/my-tuitions");
     }
   };
 
@@ -99,26 +101,19 @@ const TuitionsPost = () => {
           <div>
             <h3 className="text-2xl font-semibold mb-6">Tutor Requirements</h3>
 
-            {/* SSC + HSC */}
-            <div className="">
-              <div>
-                <label className="label mt-2">SSC Result</label>
-                <input
-                  {...register("sscResult")}
-                  placeholder="Example: 4.50"
-                  className="input input-bordered w-full"
-                />
-              </div>
+            <label className="label mt-2">SSC Result</label>
+            <input
+              {...register("sscResult")}
+              placeholder="Example: 4.50"
+              className="input input-bordered w-full"
+            />
 
-              <div>
-                <label className="label mt-2">HSC Result</label>
-                <input
-                  {...register("hscResult")}
-                  placeholder="Example: 4.75"
-                  className="input input-bordered w-full"
-                />
-              </div>
-            </div>
+            <label className="label mt-2">HSC Result</label>
+            <input
+              {...register("hscResult")}
+              placeholder="Example: 4.75"
+              className="input input-bordered w-full"
+            />
 
             <label className="label mt-2">University</label>
             <input
@@ -154,7 +149,6 @@ const TuitionsPost = () => {
           </div>
         </div>
 
-        {/* NOTES */}
         <div>
           <label className="label mt-2">Additional Notes (Optional)</label>
           <textarea
