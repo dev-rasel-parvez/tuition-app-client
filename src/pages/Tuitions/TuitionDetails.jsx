@@ -1,64 +1,79 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import Swal from "sweetalert2";
 import useAuth from "../../hooks/useAuth";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const TuitionDetails = () => {
-  const { tuitionId } = useParams();   // ✅ Correct param
-  const [tuition, setTuition] = useState(null);
+  const { tuitionId } = useParams();
+  const [t, setT] = useState(null);
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure(); // ✅ use secure axios instance
 
-  // Load tuition details by tuitionId
   useEffect(() => {
-    axios.get(`/tuitions/${tuitionId}`).then((res) => setTuition(res.data));
-  }, [tuitionId]);
+    axiosSecure.get(`/tuitions/${tuitionId}`)
+      .then((res) => setT(res.data))
+      .catch((err) => console.log(err));
+  }, [tuitionId,axiosSecure]);
 
-  // Apply function (using tuitionId correctly)
-  const apply = async () => {
-    if (!user?.email) {
-      return Swal.fire("Login Required", "Please login to apply.", "warning");
-    }
-
-    const res = await axios.post(`/tuitions/${tuitionId}/apply`, {
-      tutorEmail: user.email,
-      tutorName: user.displayName,
-    });
-
-    if (res.data.applied) {
-      Swal.fire("Applied!", "Your application has been submitted.", "success");
-    }
-  };
-
-  if (!tuition) return <div>Loading...</div>;
+  if (!t) return <div className="text-center mt-20 text-xl">Loading...</div>;
 
   return (
-    <div className="p-8 max-w-3xl mx-auto">
+    <div className="max-w-4xl mx-auto p-6">
 
-      <h1 className="text-4xl font-bold mb-6">
-        {tuition.class} Tuition Details
+      {/* Title */}
+      <h1 className="text-4xl md:text-5xl font-extrabold text-center text-gray-900 mb-8 
+                     animate-[fadeIn_0.6s_ease-in-out]">
+        {t.title}
       </h1>
 
-      <div className="space-y-3">
-        <p><strong>Subjects:</strong> {tuition.subjects}</p>
-        <p><strong>Budget:</strong> {tuition.budget}</p>
-        <p><strong>Location:</strong> {tuition.location}</p>
-        <p><strong>Schedule:</strong> {tuition.schedule}</p>
+      {/* Main Card */}
+      <div className="bg-white shadow-2xl rounded-2xl p-10 border border-gray-200 
+                      animate-[slideUp_0.6s_ease]">
 
-        <hr />
+        {/* Tuition Info */}
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Tuition Details</h2>
 
-        <h2 className="text-2xl font-semibold">Tutor Requirements</h2>
-        <p><strong>SSC:</strong> {tuition.sscResult}</p>
-        <p><strong>HSC:</strong> {tuition.hscResult}</p>
-        <p><strong>University:</strong> {tuition.university}</p>
-        <p><strong>Department:</strong> {tuition.uniSubject}</p>
-        <p><strong>Running Year:</strong> {tuition.runningYear}</p>
-        <p><strong>Experience:</strong> {tuition.experience}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
+          <p><strong>Class:</strong> {t.class}</p>
+          <p><strong>Subjects:</strong> {t.subjects}</p>
+          <p><strong>Budget:</strong> {t.budget} TK</p>
+          <p><strong>Location:</strong> {t.location}</p>
+          <p><strong>Schedule:</strong> {t.schedule}</p>
+        </div>
+
+        <hr className="my-6" />
+
+        {/* Tutor Requirements */}
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Tutor Requirements</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
+          <p><strong>SSC:</strong> {t.sscResult}</p>
+          <p><strong>HSC:</strong> {t.hscResult}</p>
+          <p><strong>University:</strong> {t.university}</p>
+          <p><strong>Department:</strong> {t.uniSubject}</p>
+          <p><strong>Running Year:</strong> {t.runningYear}</p>
+          <p><strong>Experience:</strong> {t.experience} years</p>
+        </div>
+
+        {/* Apply Button */}
+        <button
+          onClick={async () => {
+            const res = await axiosSecure.post(`/tuitions/${tuitionId}/apply`, {
+              tutorEmail: user.email,
+              tutorName: user.displayName,
+            });
+
+            if (res.data.applied) {
+              Swal.fire("Applied!", "Your application has been submitted.", "success");
+            }
+          }}
+          className="mt-10 w-full py-4 bg-green-600 text-white text-xl rounded-xl 
+                     shadow-lg hover:bg-green-700 hover:scale-[1.03] transition"
+        >
+          Apply for This Tuition
+        </button>
       </div>
-
-      <button className="btn btn-primary mt-6" onClick={apply}>
-        Apply for This Tuition
-      </button>
     </div>
   );
 };

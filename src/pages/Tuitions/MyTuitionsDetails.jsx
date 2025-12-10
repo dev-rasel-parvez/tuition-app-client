@@ -1,34 +1,57 @@
-import { useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+
+import { useEffect, useState, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import { FaEdit, FaTrash, FaUsers } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 const MyTuitionsDetails = () => {
-  const { tuitionId } = useParams();   // ✅ FIXED
+  const { tuitionId } = useParams();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
   const [t, setT] = useState(null);
 
-  const load = async () => {
-    const res = await axiosSecure.get(`/tuitions/${tuitionId}`);   // ✅ FIXED
-    setT(res.data);
-  };
+  // -----------------------------
+  // SAFE + CLEAN useCallback WRAPPED FETCH
+  // -----------------------------
+  const loadTuition = useCallback(
+    async (signal) => {
+      try {
+        const res = await axiosSecure.get(`/tuitions/${tuitionId}`, { signal });
+        setT(res.data);
+      } catch (err) {
+        if (err.name !== "CanceledError") console.error(err);
+      }
+    },
+    [axiosSecure, tuitionId]
+  );
 
-  useEffect(() => { load(); }, []);
+  // -----------------------------
+  // CLEAN EFFECT (NO WARNINGS)
+  // -----------------------------
+  useEffect(() => {
+    const controller = new AbortController();
+    loadTuition(controller.signal);
 
+    return () => controller.abort();
+  }, [loadTuition]);
+
+  // -----------------------------
+  // DELETE TUITION
+  // -----------------------------
   const handleDelete = async () => {
     const c = await Swal.fire({
       title: "Delete this tuition?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Delete"
+      confirmButtonText: "Delete",
     });
 
     if (!c.isConfirmed) return;
 
-    await axiosSecure.delete(`/tuitions/${tuitionId}`);   // ✅ FIXED
+    await axiosSecure.delete(`/tuitions/${tuitionId}`);
     navigate("/dashboard/my-tuitions");
   };
 
@@ -41,7 +64,6 @@ const MyTuitionsDetails = () => {
       <p className="text-gray-500 mb-4">Tuition ID: {t.tuitionId}</p>
 
       <div className="space-y-2 bg-white p-6 rounded-xl shadow-lg">
-
         <p><strong>Class:</strong> {t.class}</p>
         <p><strong>Subjects:</strong> {t.subjects}</p>
         <p><strong>Budget:</strong> {t.budget}</p>
@@ -55,18 +77,24 @@ const MyTuitionsDetails = () => {
 
       <div className="flex gap-4 mt-6">
 
-        <Link to={`/dashboard/edit-tuition/${tuitionId}`}
-          className="btn flex items-center gap-2">
+        <Link
+          to={`/dashboard/edit-tuition/${tuitionId}`}
+          className="btn flex items-center gap-2"
+        >
           <FaEdit /> Edit
         </Link>
 
-        <button onClick={handleDelete}
-          className="btn btn-error text-white flex items-center gap-2">
+        <button
+          onClick={handleDelete}
+          className="btn btn-error text-white flex items-center gap-2"
+        >
           <FaTrash /> Delete
         </button>
 
-        <Link to={`/applications/${tuitionId}`}
-          className="btn btn-info text-white flex items-center gap-2">
+        <Link
+          to={`/applications/${tuitionId}`}
+          className="btn btn-info text-white flex items-center gap-2"
+        >
           <FaUsers /> View Applications
         </Link>
 

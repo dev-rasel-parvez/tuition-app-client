@@ -37,7 +37,8 @@ export const router = createBrowserRouter([
       { path: "contact", element: <Contact /> },
 
       // Public tuition details (now uses tuitionId, NOT _id)
-      { path: "tuition/:tuitionId", element: <TuitionDetails /> },
+      { path: "tuitions/:tuitionId", element: <TuitionDetails /> }
+
     ]
   },
 
