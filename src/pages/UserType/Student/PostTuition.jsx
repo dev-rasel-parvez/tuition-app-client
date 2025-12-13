@@ -1,10 +1,10 @@
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
-import useAuth from "../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useAuth from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
-const TuitionsPost = () => {
+const PostTuition = () => {
   const { register, handleSubmit, reset } = useForm();
   const axiosSecure = useAxiosSecure();
   const { user } = useAuth();
@@ -165,4 +165,4 @@ const TuitionsPost = () => {
   );
 };
 
-export default TuitionsPost;
+export default PostTuition;

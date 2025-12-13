@@ -1,66 +1,54 @@
-import useAuth from '../../../hooks/useAuth';
-import { useLocation, useNavigate } from 'react-router';
+import useAuth from "../../../hooks/useAuth";
+import useRole from "../../../hooks/useRole";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import useAxiosSecure from '../../../hooks/useAxiosSecure';
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { useEffect } from "react";
+import { redirectByRole } from "../../../utils/redirectByRole";
 
 const SocialLogin = () => {
-    const { signInGoogle } = useAuth();
-    const axiosSecure = useAxiosSecure();
-    const location = useLocation();
-    const navigate = useNavigate();
+  const { signInGoogle, user } = useAuth();
+  const { role } = useRole();
+  const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
 
-    const handleGoogleSignIn = () => {
-        signInGoogle()
-            .then(result => {
+  const handleGoogleSignIn = async () => {
+    try {
+      const result = await signInGoogle();
 
-                const userInfo = {
-                    email: result.user.email,
-                    name: result.user.displayName,
-                    photoURL: result.user.photoURL,
-                    phone: null,                // Google doesn't give phone
-                    role: "student",            // Default role
-                    createdAt: new Date()
-                };
+      await axiosSecure.post("/users", {
+        email: result.user.email,
+        name: result.user.displayName,
+        photoURL: result.user.photoURL,
+        role: "student", // ✅ DEFAULT
+        provider: "google",
+        createdAt: new Date(),
+      }).catch(() => {});
 
-                // Save user (ignore if already exists)
-                axiosSecure.post('/users', userInfo)
-                    .catch(() => { })  // ignore duplicate errors
-                    .finally(() => {
+      Swal.fire({
+        icon: "success",
+        title: "Google Login Successful",
+        timer: 1500,
+        showConfirmButton: false,
+      });
 
-                        Swal.fire({
-                            icon: "success",
-                            title: "Logged in with Google!",
-                            timer: 1800,
-                            showConfirmButton: false,
-                            position: "top-end"
-                        });
+    } catch (error) {
+      Swal.fire("Google Login Failed", error.message, "error");
+    }
+  };
 
-                        const redirectPath = location.state?.from?.pathname || "/dashboard";
-                        navigate(redirectPath, { replace: true });
-                    });
+  // 🔥 ROLE BASED REDIRECT
+  useEffect(() => {
+    if (user && role) {
+      navigate(redirectByRole(role), { replace: true });
+    }
+  }, [user, role, navigate]);
 
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: "error",
-                    title: "Google Login Failed",
-                    text: error.message,
-                });
-            });
-    };
-
-    return (
-        <div className='text-center pb-8'>
-            <p className='mb-2'>OR</p>
-
-            <button 
-                onClick={handleGoogleSignIn}
-                className="btn bg-white text-black border-[#e5e5e5]"
-            >
-                Login with Google
-            </button>
-        </div>
-    );
+  return (
+    <button onClick={handleGoogleSignIn} className="btn w-full">
+      Login with Google
+    </button>
+  );
 };
 
 export default SocialLogin;

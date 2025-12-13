@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { FaFilter, FaTimes } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
+import useAuth from "../../../hooks/useAuth";
+
+import Swal from "sweetalert2";
 
 const Tutors = () => {
     const axiosSecure = useAxiosSecure();
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const [tutors, setTutors] = useState([]);
     const [page, setPage] = useState(1);
     const [showFilter, setShowFilter] = useState(false);
-const [total, setTotal] = useState(0);
+    const [total, setTotal] = useState(0);
 
     const [filters, setFilters] = useState({
         university: "",
@@ -27,39 +31,25 @@ const [total, setTotal] = useState(0);
     );
 
     // -------------------------
-    // MASK FUNCTIONS
-    // -------------------------
-    const maskPhone = (num) => {
-        if (!num) return "";
-        return num.slice(0, 3) + "******" + num.slice(-2);
-    };
-
-    const maskEmail = (email) => {
-        if (!email) return "";
-        const [name, domain] = email.split("@");
-        return name.slice(0, 2) + "****@" + domain;
-    };
-
-    // -------------------------
     // LOAD TUTORS
     // -------------------------
-const loadTutors = async () => {
-    let query = `/tutors?page=${page}&limit=12`;
+    const loadTutors = async () => {
+        let query = `/tutors?page=${page}&limit=12`;
 
-    Object.entries(filters).forEach(([key, value]) => {
-        if (value) query += `&${key}=${value}`;
-    });
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value) query += `&${key}=${value}`;
+        });
 
-    const res = await axiosSecure.get(query);
+        const res = await axiosSecure.get(query);
 
-    if (page === 1) {
-        setTutors(res.data.tutors);
-    } else {
-        setTutors(prev => [...prev, ...res.data.tutors]);
-    }
+        if (page === 1) {
+            setTutors(res.data.tutors);
+        } else {
+            setTutors(prev => [...prev, ...res.data.tutors]);
+        }
 
-    setTotal(res.data.total);
-};
+        setTotal(res.data.total);
+    };
 
     useEffect(() => {
         loadTutors();
@@ -77,6 +67,22 @@ const loadTutors = async () => {
         setPage(1);
     };
 
+    // -------------------------
+    // CONTACT TUTOR HANDLER
+    // -------------------------
+    const handleContact = (id) => {
+        if (!user) {
+            Swal.fire({
+                icon: "warning",
+                title: "Login Required",
+                text: "Please login to view tutor details.",
+                confirmButtonText: "Login Now"
+            }).then(() => navigate("/auth/login"));
+            return;
+        }
+
+        navigate(`/tutors/${id}`);
+    };
 
     return (
         <div className="p-8 min-h-screen bg-gray-50">
@@ -131,51 +137,27 @@ const loadTutors = async () => {
 
                         {/* FILTER FIELDS */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input className="input input-bordered" placeholder="University"
+                                onChange={(e) => setFilters({ ...filters, university: e.target.value })} />
 
-                            <input
-                                className="input input-bordered"
-                                placeholder="University"
-                                onChange={(e) => setFilters({ ...filters, university: e.target.value })}
-                            />
+                            <input className="input input-bordered" placeholder="Department"
+                                onChange={(e) => setFilters({ ...filters, department: e.target.value })} />
 
-                            <input
-                                className="input input-bordered"
-                                placeholder="Department"
-                                onChange={(e) => setFilters({ ...filters, department: e.target.value })}
-                            />
+                            <input className="input input-bordered" placeholder="Experience (years)"
+                                onChange={(e) => setFilters({ ...filters, experience: e.target.value })} />
 
-                            <input
-                                className="input input-bordered"
-                                placeholder="Experience (years)"
-                                onChange={(e) => setFilters({ ...filters, experience: e.target.value })}
-                            />
+                            <input className="input input-bordered" placeholder="Running Year"
+                                onChange={(e) => setFilters({ ...filters, runningYear: e.target.value })} />
 
-                            <input
-                                className="input input-bordered"
-                                placeholder="Running Year"
-                                onChange={(e) => setFilters({ ...filters, runningYear: e.target.value })}
-                            />
+                            <input className="input input-bordered" placeholder="SSC Result"
+                                onChange={(e) => setFilters({ ...filters, ssc: e.target.value })} />
 
-                            <input
-                                className="input input-bordered"
-                                placeholder="SSC Result"
-                                onChange={(e) => setFilters({ ...filters, ssc: e.target.value })}
-                            />
-
-                            <input
-                                className="input input-bordered"
-                                placeholder="HSC Result"
-                                onChange={(e) => setFilters({ ...filters, hsc: e.target.value })}
-                            />
-
+                            <input className="input input-bordered" placeholder="HSC Result"
+                                onChange={(e) => setFilters({ ...filters, hsc: e.target.value })} />
                         </div>
 
-                        {/* Filter Buttons */}
                         <div className="flex justify-between mt-4">
-                            <button
-                                className="btn btn-outline"
-                                onClick={() => setShowFilter(false)}
-                            >
+                            <button className="btn btn-outline" onClick={() => setShowFilter(false)}>
                                 Close
                             </button>
 
@@ -194,13 +176,13 @@ const loadTutors = async () => {
                 </div>
             )}
 
-            {/* TUTOR CARDS GRID */}
+            {/* TUTOR CARDS */}
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {tutors.map((t, index) => (
+                {tutors.map((t) => (
                     <motion.div
                         key={t._id}
                         className="bg-white p-6 rounded-xl shadow cursor-pointer flex flex-col justify-between min-h-[480px]"
-                        onClick={() => navigate(`/tutors/${t._id}`)}
+                        onClick={() => handleContact(t._id)}
                     >
                         <div className="flex flex-col items-center text-center flex-grow">
                             <img
@@ -222,12 +204,10 @@ const loadTutors = async () => {
                             </div>
                         </div>
 
-                        {/* BOTTOM BUTTON ALWAYS FIXED */}
                         <button className="btn btn-sm mt-3 bg-pink-600 text-white w-full">
                             Contact Tutor
                         </button>
                     </motion.div>
-
                 ))}
             </div>
 

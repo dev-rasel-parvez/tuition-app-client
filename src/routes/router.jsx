@@ -1,96 +1,78 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
+
 import RootLayout from "../layouts/RootLayout";
+import AuthLayout from "../layouts/AuthLayout";
+import DashboardLayout from "../layouts/DashboardLayout";
+
+import PrivateRoute from "./PrivateRoute";
 
 import Home from "../pages/Home/Home/Home";
 import About from "../pages/About/About";
 import Contact from "../pages/Contact/Contact";
-import Tutors from "../pages/Tutors/Tutors";
 
-import AvailableTuitions from "../pages/Tuitions/AvailableTuitions";
-import TuitionDetails from "../pages/Tuitions/TuitionDetails";
-import EditTuition from "../pages/Tuitions/EditTuition";
-import MyTuitions from "../pages/Tuitions/MyTuitions";
-import MyTuitionsDetails from "../pages/Tuitions/MyTuitionsDetails";
-import Applications from "../pages/Tuitions/Applications";
-
-import AuthLayout from "../layouts/AuthLayout";
 import Login from "../pages/Auth/Login/Login";
 import Register from "../pages/Auth/Register/Register";
 
-import DashboardLayout from "../layouts/DashboardLayout";
-import UserDashboardHome from "../pages/Dashboard/DashboardHome/UserDashboardHome";
-import TuitionsPost from "../pages/Tuitions/TuitionsPost";
+import DashboardHome from "../pages/Dashboard/DashboardHome";
 
-// -------------------------
-// TUTOR DASHBOARD COMPONENTS
-// -------------------------
-import MyApplications from "../pages/TutorDashboard/MyApplications";
-import OngoingTuitions from "../pages/TutorDashboard/OngoingTuitions";
-import RevenueHistory from "../pages/TutorDashboard/RevenueHistory";
-import TutorDetails from "../pages/Tutors/TutorDetails";
-import TutorAvailableTuitions from "../pages/TutorDashboard/TutorAvailableTuitions";
+import PostTuition from "../pages/UserType/Student/PostTuition";
+import StudentProfile from "../pages/UserType/Student/StudentProfile";
+import AvailableTuitions from "../pages/UserType/Student/AvailableTuitions";
+import TuitionDetails from "../pages/UserType/Student/TuitionDetails";
 
-export const router = createBrowserRouter([
+import Tutors from "../pages/UserType/Tutors/Tutors";
+import TutorDetails from "../pages/UserType/Tutors/TutorDetails";
+import MyApplications from "../pages/UserType/Tutors/MyApplications";
+import TutorProfile from "../pages/UserType/Tutors/TutorProfile";
 
-  // ============================================
-  // PUBLIC WEBSITE ROUTES
-  // ============================================
+import UserManagement from "../pages/UserType/Admin/UserManagement";
+
+import Forbidden from "../components/common/Forbidden";
+import Admin from "../pages/Auth/Admin/Admin";
+
+const router = createBrowserRouter([
   {
     path: "/",
-    Component: RootLayout,
+    element: <RootLayout />,
     children: [
       { index: true, element: <Home /> },
-      { path: "available-tuitions", element: <AvailableTuitions /> },
-      { path: "tutors", element: <Tutors /> },
       { path: "about", element: <About /> },
       { path: "contact", element: <Contact /> },
-
-      // Public tuition details (now uses tuitionId)
+      { path: "available-tuitions", element: <AvailableTuitions /> },
       { path: "tuitions/:tuitionId", element: <TuitionDetails /> },
-      { path: "tutors/:id", element: <TutorDetails /> }
-
-    ]
+      { path: "tutors", element: <Tutors /> },
+      { path: "tutors/:id", element: <TutorDetails /> },
+    ],
   },
 
-  // ============================================
-  // AUTH ROUTES
-  // ============================================
   {
-    path: "/",
-    Component: AuthLayout,
+    path: "/auth",
+    element: <AuthLayout />,
     children: [
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
-    ]
+      { path: "admin", element: <Admin /> },
+    ],
   },
 
-  // ============================================
-  // DASHBOARD ROUTES
-  // ============================================
   {
-    path: "dashboard",
-    element: <DashboardLayout />,
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        <DashboardLayout />
+      </PrivateRoute>
+    ),
     children: [
-      { index: true, element: <UserDashboardHome /> },
-
-      // --------------------------
-      // STUDENT DASHBOARD ROUTES
-      // --------------------------
-      { path: "post-tuition", element: <TuitionsPost /> },
-      { path: "my-tuitions", element: <MyTuitions /> },
-      { path: "my-tuitions/:tuitionId", element: <MyTuitionsDetails /> },
-      { path: "edit-tuition/:tuitionId", element: <EditTuition /> },
-      { path: "applications/:tuitionId", element: <Applications /> },
-
-      // --------------------------
-      // TUTOR DASHBOARD ROUTES
-      // --------------------------
+      { index: true, element: <DashboardHome /> },
+      { path: "post-tuition", element: <PostTuition /> },
+      { path: "profile", element: <StudentProfile /> },
       { path: "tutor/applications", element: <MyApplications /> },
-      { path: "tutor/ongoing-tuitions", element: <OngoingTuitions /> },
-      { path: "tutor/revenue", element: <RevenueHistory /> },
-      { path: "tutor/available-tuitions", element: <TutorAvailableTuitions /> },
-      { path: "tutor/tuitions/:tuitionId", element: <TuitionDetails /> },
-    ]
-  }
+      { path: "tutor/profile", element: <TutorProfile /> },
+      { path: "users", element: <UserManagement /> },
+    ],
+  },
 
+  { path: "/forbidden", element: <Forbidden /> },
 ]);
+
+export default router;

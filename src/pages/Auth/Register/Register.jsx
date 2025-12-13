@@ -1,198 +1,163 @@
 import { useForm } from "react-hook-form";
 import useAuth from "../../../hooks/useAuth";
-import { Link, useLocation, useNavigate } from "react-router";
+import useRole from "../../../hooks/useRole";
+import { Link, useNavigate } from "react-router-dom";
 import SocialLogin from "../SocialLogin/SocialLogin";
 import axios from "axios";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import { useState } from "react";
+import { useEffect } from "react";
+import { redirectByRole } from "../../../utils/redirectByRole";
 
 const Register = () => {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
-  const { registerUser, updateUserProfile } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const axiosSecure = useAxiosSecure();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
 
-  const selectedRole = watch("role"); // Detect selected role
+  const { registerUser, updateUserProfile, user } = useAuth();
+  const { role } = useRole();
+  const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
+
+  const selectedRole = watch("role");
+
+  // 🔥 ROLE BASED REDIRECT (AFTER REGISTER)
+  useEffect(() => {
+    if (user && role) {
+      navigate(redirectByRole(role), { replace: true });
+    }
+  }, [user, role, navigate]);
 
   const handleRegistration = async (data) => {
     try {
-      // 1. Create Firebase Auth User
-      const result = await registerUser(data.email, data.password);
+      // 1️⃣ Firebase Auth
+      await registerUser(data.email, data.password);
 
-      // 2. Upload Profile Photo
+      // 2️⃣ Upload Image (optional)
       let photoURL = "";
-      if (data.photo?.length > 0) {
+      if (data.photo?.length) {
         const formData = new FormData();
         formData.append("image", data.photo[0]);
 
-        const imageAPI = `https://api.imgbb.com/1/upload?key=${
-          import.meta.env.VITE_image_host_key
-        }`;
+        const imgRes = await axios.post(
+          `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_image_host_key}`,
+          formData
+        );
 
-        const imgRes = await axios.post(imageAPI, formData);
         photoURL = imgRes.data.data.url;
       }
 
-      // 3. Firebase Profile Update
+      // 3️⃣ Update Firebase Profile
       await updateUserProfile({
         displayName: data.name,
-        photoURL: photoURL,
+        photoURL,
       });
 
-      // 4. Prepare MongoDB user object
+      // 4️⃣ Prepare DB User
       const userInfo = {
         name: data.name,
         email: data.email,
         phone: data.phone,
         role: data.role,
-        photoURL: photoURL,
+        photoURL,
         createdAt: new Date(),
+        provider: "email",
       };
 
-      // 5. Add Tutor Only Fields
+      // Tutor extra fields
       if (data.role === "tutor") {
-        userInfo.university = data.university;
-        userInfo.department = data.department;
-        userInfo.experience = data.experience;
-        userInfo.runningYear = data.runningYear;
-        userInfo.ssc = data.ssc;
-        userInfo.hsc = data.hsc;
-        userInfo.contactEmail = data.contactEmail;   // NEW FIELD
-        userInfo.contactPhone = data.contactPhone;   // NEW FIELD
+        Object.assign(userInfo, {
+          university: data.university,
+          department: data.department,
+          experience: data.experience,
+          runningYear: data.runningYear,
+          ssc: data.ssc,
+          hsc: data.hsc,
+          contactPhone: data.contactPhone,
+        });
       }
 
-      // 6. Save to MongoDB
+      // 5️⃣ Save to MongoDB
       await axiosSecure.post("/users", userInfo);
 
       Swal.fire({
         icon: "success",
-        title: "Account Created!",
-        text: "Welcome to eTuitionBd",
-        timer: 1800,
-        position: "top-end",
+        title: "Account Created Successfully",
+        timer: 1500,
         showConfirmButton: false,
       });
-
-      navigate(location.state?.from?.pathname || "/dashboard", { replace: true });
 
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Registration Failed",
         text: error.message,
-        confirmButtonColor: "#d33",
       });
     }
   };
 
   return (
-    <div className="card bg-base-100 pt-4 w-full mx-auto max-w-sm shrink-0 shadow-2xl">
-      <h3 className="text-3xl text-center font-bold">Create Your Account</h3>
-      <p className="text-center">Register to continue</p>
+    <div className="card bg-base-100 max-w-sm mx-auto shadow-2xl">
+      <h3 className="text-3xl font-bold text-center mt-4">Create Account</h3>
 
-      <form className="card-body" onSubmit={handleSubmit(handleRegistration)}>
-        <fieldset className="fieldset">
+      <form onSubmit={handleSubmit(handleRegistration)} className="card-body">
 
-          {/* FULL NAME */}
-          <label className="label">Full Name</label>
-          <input
-            type="text"
-            {...register("name", { required: true })}
-            className="input"
-            placeholder="Your Full Name"
-          />
-          {errors.name && <p className="text-red-500">Name is required.</p>}
+        <input
+          {...register("name", { required: true })}
+          placeholder="Full Name"
+          className="input"
+        />
+        {errors.name && <p className="text-red-500">Name required</p>}
 
-          {/* EMAIL */}
-          <label className="label">Email Address</label>
-          <input
-            type="email"
-            {...register("email", { required: true })}
-            className="input"
-            placeholder="Email"
-          />
-          {errors.email && <p className="text-red-500">Email is required.</p>}
+        <input
+          {...register("email", { required: true })}
+          placeholder="Email"
+          className="input"
+        />
 
-          {/* PHONE */}
-          <label className="label">Phone Number</label>
-          <input
-            type="text"
-            {...register("phone", { required: true })}
-            className="input"
-            placeholder="Phone Number"
-          />
-          {errors.phone && <p className="text-red-500">Phone is required.</p>}
+        <input
+          {...register("phone", { required: true })}
+          placeholder="Phone"
+          className="input"
+        />
 
-          {/* ROLE SELECT */}
-          <label className="label">Register As</label>
-          <select {...register("role", { required: true })} className="select select-bordered">
-            <option value="student">Student / Guardian</option>
-            <option value="tutor">Tutor</option>
-          </select>
+        <select {...register("role")} className="select select-bordered">
+          <option value="student">Student / Guardian</option>
+          <option value="tutor">Tutor</option>
+        </select>
 
-          {/* ------------------------------ */}
-          {/* TUTOR EXTRA FIELDS */}
-          {/* ------------------------------ */}
-          {selectedRole === "tutor" && (
-            <div className="space-y-3 mt-4 border p-3 rounded-lg bg-gray-50">
+        {/* Tutor Extra Fields */}
+        {selectedRole === "tutor" && (
+          <div className="space-y-2 border p-3 rounded">
+            <input {...register("university")} placeholder="University" className="input" />
+            <input {...register("department")} placeholder="Department" className="input" />
+            <input {...register("experience")} placeholder="Experience" className="input" />
+            <input {...register("runningYear")} placeholder="Running Year" className="input" />
+            <input {...register("ssc")} placeholder="SSC Result" className="input" />
+            <input {...register("hsc")} placeholder="HSC Result" className="input" />
+            <input {...register("contactPhone")} placeholder="Contact Phone" className="input" />
+          </div>
+        )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input {...register("university", { required: true })} className="input input-bordered" placeholder="University" />
-                <input {...register("department", { required: true })} className="input input-bordered" placeholder="Department" />
-              </div>
+        <input type="file" {...register("photo")} className="file-input" />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input {...register("experience", { required: true })} className="input input-bordered" placeholder="Experience (years)" />
-                <input {...register("runningYear", { required: true })} className="input input-bordered" placeholder="Running Year" />
-              </div>
+        <input
+          type="password"
+          {...register("password", { required: true, minLength: 6 })}
+          placeholder="Password"
+          className="input"
+        />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input {...register("ssc", { required: true })} className="input input-bordered" placeholder="SSC Result" />
-                <input {...register("hsc", { required: true })} className="input input-bordered" placeholder="HSC Result" />
-              </div>
+        <button className="btn btn-neutral">Register</button>
 
-              {/* NEW CONTACT FIELDS */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input
-                  {...register("contactEmail", { required: true })}
-                  className="input input-bordered"
-                  placeholder="Tutor Contact Email"
-                />
-
-                <input
-                  {...register("contactPhone", { required: true })}
-                  className="input input-bordered"
-                  placeholder="Tutor Contact Phone"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* PHOTO */}
-          <label className="label">Profile Photo</label>
-          <input type="file" {...register("photo")} className="file-input" />
-
-          {/* PASSWORD */}
-          <label className="label">Password</label>
-          <input
-            type="password"
-            {...register("password", {
-              required: true,
-              minLength: 6,
-              pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/
-            })}
-            className="input"
-            placeholder="Password"
-          />
-
-          <button className="btn btn-neutral mt-4">Register</button>
-        </fieldset>
-
-        <p className="text-center mt-2">
+        <p className="text-center">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 underline">Login</Link>
+          <Link to="/auth/login" className="text-blue-500 underline">
+            Login
+          </Link>
         </p>
       </form>
 

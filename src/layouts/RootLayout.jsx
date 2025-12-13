@@ -1,17 +1,36 @@
-import { Outlet } from 'react-router';
-import Footer from '../pages/Shared/Footer/Footer';
-import Navbar from '../pages/Shared/NavBar/NavBar';
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import NavBar from "../pages/Shared/NavBar/NavBar";
+import Footer from "../pages/Shared/Footer/Footer";
+import useAuth from "../hooks/useAuth";
+import useRole from "../hooks/useRole";
+import { useEffect } from "react";
+import { redirectByRole } from "../utils/redirectByRole";
 
 const RootLayout = () => {
-  return (
-    <div className="min-h-screen flex flex-col bg-[var(--color-bg)] text-[var(--color-text-primary)]">
-      <Navbar />
+  const { user, loading } = useAuth();
+  const { role, roleLoading } = useRole();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-      <main className="flex-1 bg-[var(--color-bg)] text-[var(--color-text-primary)]">
+  useEffect(() => {
+    // 🔥 AUTO REDIRECT AFTER LOGIN
+    if (user && !loading && !roleLoading) {
+      // prevent redirect loop
+      if (!location.pathname.startsWith("/dashboard")) {
+        navigate(redirectByRole(role), { replace: true });
+      }
+    }
+  }, [user, role, loading, roleLoading, navigate, location.pathname]);
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {!user && <NavBar />}
+
+      <main className="flex-1">
         <Outlet />
       </main>
 
-      <Footer />
+      {!user && <Footer />}
     </div>
   );
 };

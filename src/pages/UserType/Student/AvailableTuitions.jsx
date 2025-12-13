@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { useNavigate } from "react-router-dom";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { FaFilter, FaTimes } from "react-icons/fa";
-import useAuth from "../../hooks/useAuth";
+import Swal from "sweetalert2";
+import useAuth from "../../../hooks/useAuth";
 
 const AvailableTuitions = () => {
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [tuitions, setTuitions] = useState([]);
-  const [total, setTotal] = useState(0);   // ✅ REAL TOTAL COUNT
+  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
 
   const [showFilter, setShowFilter] = useState(false);
@@ -29,7 +32,7 @@ const AvailableTuitions = () => {
   );
 
   // ==========================================================
-  // LOAD TUITIONS (UPDATED FOR total + tuitions)
+  // LOAD TUITIONS
   // ==========================================================
   const loadTuitions = async () => {
     let query = `/tuitions?limit=12&page=${page}`;
@@ -40,16 +43,13 @@ const AvailableTuitions = () => {
 
     const res = await axiosSecure.get(query);
 
-    // BACKEND NOW RETURNS:
-    // { total: number, tuitions: [...] }
-
     if (page === 1) {
       setTuitions(res.data.tuitions);
     } else {
       setTuitions((prev) => [...prev, ...res.data.tuitions]);
     }
 
-    setTotal(res.data.total);  // ✅ SHOW TOTAL FROM DATABASE
+    setTotal(res.data.total);
   };
 
   useEffect(() => {
@@ -81,14 +81,32 @@ const AvailableTuitions = () => {
     setPage(1);
   };
 
+  // ==========================================================
+  // HANDLE DETAILS CLICK (LOGIN CHECK)
+  // ==========================================================
+  const handleDetailsClick = (tuitionId) => {
+    if (!user) {
+      Swal.fire({
+        icon: "warning",
+        title: "Login Required",
+        text: "Please login to view tuition details.",
+        confirmButtonText: "Login Now",
+      }).then(() => {
+        navigate("/auth/login");
+      });
+      return;
+    }
+
+    navigate(`/tuitions/${tuitionId}`);
+  };
+
   return (
     <div className="p-8 min-h-screen bg-gray-50">
 
-      {/* TOP HEADER */}
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-700">
           Tuitions Found: <span className="text-pink-600">{total}</span>
-          {/* ✅ SHOW REAL TOTAL, NOT ONLY LOADED */}
         </h2>
 
         <button
@@ -103,7 +121,6 @@ const AvailableTuitions = () => {
       {Object.keys(activeFilters).length > 0 && (
         <div className="mb-4">
           <div className="flex flex-wrap gap-2">
-
             {Object.entries(activeFilters).map(([key, value]) => (
               <span
                 key={key}
@@ -132,9 +149,7 @@ const AvailableTuitions = () => {
       {/* FILTER POPUP */}
       {showFilter && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-
           <div className="bg-white p-6 rounded-xl shadow-xl w-11/12 md:w-2/3 lg:w-1/2 space-y-4">
-
             <h3 className="text-xl font-bold mb-4">Filter Options</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -164,7 +179,6 @@ const AvailableTuitions = () => {
               />
             </div>
 
-            {/* Filter Buttons */}
             <div className="flex justify-between mt-4">
               <button
                 className="btn btn-outline"
@@ -176,7 +190,7 @@ const AvailableTuitions = () => {
               <button
                 className="btn btn-primary"
                 onClick={() => {
-                  setPage(1);   // reset to first page
+                  setPage(1);
                   loadTuitions();
                   setShowFilter(false);
                 }}
@@ -185,19 +199,17 @@ const AvailableTuitions = () => {
               </button>
             </div>
           </div>
-
         </div>
       )}
 
-      {/* GRID CARDS */}
+      {/* TUITIONS GRID */}
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {tuitions.map((t) => (
-          <Link
-            to={`/tuitions/${t.tuitionId}`}
+          <div
             key={t._id}
-            className="bg-white p-6 rounded-xl shadow hover:shadow-2xl transition border"
+            onClick={() => handleDetailsClick(t.tuitionId)}
+            className="bg-white p-6 rounded-xl shadow hover:shadow-2xl transition border cursor-pointer"
           >
-
             <h3 className="text-2xl font-bold">{t.title}</h3>
 
             <p><strong>Class:</strong> {t.class}</p>
@@ -213,11 +225,11 @@ const AvailableTuitions = () => {
             <p className="text-sm text-gray-400 mt-2">
               Posted: {timeAgo(t.createdAt)}
             </p>
-          </Link>
+          </div>
         ))}
       </div>
 
-      {/* LOAD MORE */}
+      {/* LOAD MORE BUTTON */}
       <div className="flex justify-center mt-10">
         <button
           className="btn btn-success text-white px-8"
@@ -226,7 +238,6 @@ const AvailableTuitions = () => {
           Load More
         </button>
       </div>
-
     </div>
   );
 };
