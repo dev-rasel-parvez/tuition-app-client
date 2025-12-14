@@ -2,9 +2,11 @@ import { Navigate } from "react-router-dom";
 import useAdmin from "../hooks/useAdmin";
 
 const AdminRoute = ({ children }) => {
-  const { isAdmin } = useAdmin();
+  const { loading, isApprovedAdmin } = useAdmin();
 
-  if (!isAdmin) {
+  if (loading) return null;
+
+  if (!isApprovedAdmin) {
     return <Navigate to="/dashboard" replace />;
   }
 

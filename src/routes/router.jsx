@@ -28,7 +28,7 @@ import TutorProfile from "../pages/UserType/Tutors/TutorProfile";
 import UserManagement from "../pages/UserType/Admin/UserManagement";
 
 import Forbidden from "../components/common/Forbidden";
-import Admin from "../pages/Auth/Admin/Admin";
+import AdminRegister from "../pages/Auth/AdminRegister/AdminRegister";
 
 const router = createBrowserRouter([
   {
@@ -46,14 +46,14 @@ const router = createBrowserRouter([
   },
 
   {
-    path: "/auth",
-    element: <AuthLayout />,
-    children: [
-      { path: "login", element: <Login /> },
-      { path: "register", element: <Register /> },
-      { path: "admin", element: <Admin /> },
-    ],
-  },
+  path: "/auth",
+  element: <AuthLayout />,
+  children: [
+    { path: "login", element: <Login /> },
+    { path: "register", element: <Register /> },
+    { path: "admin-register", element: <AdminRegister /> }
+  ],
+},
 
   {
     path: "/dashboard",

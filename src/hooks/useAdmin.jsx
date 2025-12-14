@@ -4,12 +4,16 @@ import { isSuperAdmin } from "../utils/isSuperAdmin";
 
 const useAdmin = () => {
   const { user } = useAuth();
-  const { role, status } = useRole();
+  const { role, status, loading } = useRole();
 
-  const isAdmin = role === "admin" && status === "approved";
   const isSuper = isSuperAdmin(user?.email);
+  const isApprovedAdmin = role === "admin" && status === "approved";
 
-  return { isAdmin, isSuper };
+  return {
+    loading,
+    isSuper,
+    isApprovedAdmin
+  };
 };
 
 export default useAdmin;

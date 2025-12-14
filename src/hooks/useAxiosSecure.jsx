@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect } from "react";
 import useAuth from "./useAuth";
 import { useNavigate } from "react-router-dom";
+import { getAuth } from "firebase/auth";
 
 const axiosSecure = axios.create({
   baseURL: "http://localhost:3000",
@@ -12,12 +13,20 @@ const useAxiosSecure = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const reqInterceptor = axiosSecure.interceptors.request.use((config) => {
-      if (user?.accessToken) {
-        config.headers.Authorization = `Bearer ${user.accessToken}`;
-      }
-      return config;
-    });
+    const reqInterceptor = axiosSecure.interceptors.request.use(
+      async (config) => {
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
+        if (currentUser) {
+          const token = await currentUser.getIdToken(); // ✅ CORRECT
+          config.headers.authorization = `Bearer ${token}`;
+        }
+
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
 
     const resInterceptor = axiosSecure.interceptors.response.use(
       (res) => res,
