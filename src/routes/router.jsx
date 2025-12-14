@@ -29,6 +29,8 @@ import UserManagement from "../pages/UserType/Admin/UserManagement";
 
 import Forbidden from "../components/common/Forbidden";
 import AdminRegister from "../pages/Auth/AdminRegister/AdminRegister";
+import TuitionManagement from "../pages/UserType/Admin/TuitionManagement";
+import TuitionDetailsPage from "../pages/UserType/Admin/TuitionDetailsPage ";
 
 const router = createBrowserRouter([
   {
@@ -46,14 +48,14 @@ const router = createBrowserRouter([
   },
 
   {
-  path: "/auth",
-  element: <AuthLayout />,
-  children: [
-    { path: "login", element: <Login /> },
-    { path: "register", element: <Register /> },
-    { path: "admin-register", element: <AdminRegister /> }
-  ],
-},
+    path: "/auth",
+    element: <AuthLayout />,
+    children: [
+      { path: "login", element: <Login /> },
+      { path: "register", element: <Register /> },
+      { path: "admin-register", element: <AdminRegister /> }
+    ],
+  },
 
   {
     path: "/dashboard",
@@ -69,6 +71,9 @@ const router = createBrowserRouter([
       { path: "tutor/applications", element: <MyApplications /> },
       { path: "tutor/profile", element: <TutorProfile /> },
       { path: "users", element: <UserManagement /> },
+      { path: "tuitions", element: <TuitionManagement /> },
+      { path: "tuitions/:id",element: <TuitionDetailsPage />,
+      },
     ],
   },
 

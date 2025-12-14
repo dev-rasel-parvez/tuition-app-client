@@ -5,7 +5,9 @@ import {
     HiChevronDoubleRight,
     HiLogout,
 } from "react-icons/hi";
-import { FaBook, FaUserGraduate, FaUsersCog } from "react-icons/fa";
+import { FaAngleRight, FaBook, FaUserGraduate, FaUsersCog } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
+
 import useAuth from "../../../hooks/useAuth";
 import useRole from "../../../hooks/useRole";
 
@@ -18,6 +20,12 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
         await logOut();
         navigate("/auth/login");
     };
+
+    const location = useLocation();
+    const isTuitionDetailsPage =
+        location.pathname.startsWith("/dashboard/tuitions/") &&
+        location.pathname !== "/dashboard/tuitions";
+
 
     return (
         <aside
@@ -87,22 +95,39 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                         )}
 
                         {/* ✅ Approved Admin */}
-                        {status === "approved" && (
-                            <>
-                                <NavItem
-                                    to="/dashboard/users"
-                                    icon={<FaUsersCog />}
-                                    text="Users"
-                                    collapsed={collapsed}
-                                />
-                                <NavItem
-                                    to="/dashboard/tuitions"
-                                    icon={<FaBook />}
-                                    text="Tuitions"
-                                    collapsed={collapsed}
-                                />
-                            </>
-                        )}
+{status === "approved" && (
+  <>
+    <NavItem
+      to="/dashboard/users"
+      icon={<FaUsersCog />}
+      text="Users"
+      collapsed={collapsed}
+    />
+
+    {/* ===== TUITIONS MAIN ===== */}
+    <NavItem
+      to="/dashboard/tuitions"
+      icon={<FaBook />}
+      text="Tuitions"
+      collapsed={collapsed}
+    />
+
+    {/* ===== SHOW ONLY ON VIEW PAGE ===== */}
+    {isTuitionDetailsPage && (
+      <div className="ml-10 mt-1">
+        <NavItem
+          to={location.pathname}
+          icon={<FaAngleRight />}
+          text="Tuition Details"
+          collapsed={collapsed}
+          isSub
+        />
+      </div>
+    )}
+  </>
+)}
+
+
                     </>
                 )}
 
