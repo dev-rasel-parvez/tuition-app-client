@@ -76,13 +76,14 @@ const Tutors = () => {
                 icon: "warning",
                 title: "Login Required",
                 text: "Please login to view tutor details.",
-                confirmButtonText: "Login Now"
+                confirmButtonText: "Login Now",
             }).then(() => navigate("/auth/login"));
             return;
         }
 
-        navigate(`/tutors/${id}`);
+        navigate(`/dashboard/tutors/${id}`);
     };
+
 
     return (
         <div className="p-8 min-h-screen bg-gray-50">

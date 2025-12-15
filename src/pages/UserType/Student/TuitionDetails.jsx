@@ -61,6 +61,10 @@ const TuitionDetails = () => {
           className="bg-white shadow-2xl rounded-2xl p-10 border border-gray-200 
                       animate-[slideUp_0.6s_ease]"
         >
+          <button className="btn btn-sm mb-5 bg-red-400 " onClick={() => navigate("/dashboard/available-tuitions")}>
+          ← Back to Tuition list
+        </button>
+
           {/* Tuition Info */}
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Tuition Details</h2>
 

@@ -113,7 +113,26 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                     <>
                         <NavItem to="/dashboard" icon={<HiHome />} text="Home" collapsed={collapsed} />
                         <NavItem to="/dashboard/tutor/applications" icon={<FaBook />} text="Applications" collapsed={collapsed} />
-                        <NavItem to="/dashboard/tutor/profile" icon={<FaUserGraduate />} text="Profile" collapsed={collapsed} />
+
+
+                        <NavItem to="/dashboard/available-tuitions" icon={<MdEventAvailable />} text="Available Tuitions" collapsed={collapsed} />
+
+                        {role === "tutor" && isTuitionSelected && (
+                            <div className="ml-10 mt-1">
+                                <NavItem
+                                    to={location.pathname}
+                                    icon={<FaAngleRight />}
+                                    text="Selected Tuition"
+                                    collapsed={collapsed}
+                                    isSub
+                                />
+                            </div>
+                        )}
+
+
+                        <NavItem to="/dashboard/tutors" icon={<HiAcademicCap />} text="Available Tutors" collapsed={collapsed} />
+
+                        <NavItem to="/dashboard/profile" icon={<FaUserGraduate />} text="Profile" collapsed={collapsed} />
                     </>
                 )}
 
@@ -128,13 +147,19 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                             collapsed={collapsed}
                         />
 
+
                         {/* ⏳ Pending Admin */}
                         {status === "pending" && !collapsed && (
-                            <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 rounded text-yellow-800 text-sm">
+                           <> 
+                           <div className="mt-4 p-3 bg-yellow-100 border border-yellow-400 rounded text-yellow-800 text-sm">
                                 ⏳ Your admin access is pending approval.
                                 <br />
                                 Please wait for super admin approval.
                             </div>
+
+                            <NavItem to="/dashboard/profile" icon={<FaUserGraduate />} text="Profile" collapsed={collapsed} />
+                           
+                           </>            
                         )}
 
                         {/* ✅ Approved Admin */}
@@ -167,6 +192,8 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                                         />
                                     </div>
                                 )}
+
+                                <NavItem to="/dashboard/profile" icon={<FaUserGraduate />} text="Profile" collapsed={collapsed} />
 
                             </>
                         )}

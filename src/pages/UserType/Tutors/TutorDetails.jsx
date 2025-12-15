@@ -94,8 +94,8 @@ const TutorDetails = () => {
         className="max-w-3xl mx-auto mt-10 bg-white shadow-lg rounded-xl p-8"
       >
         {/* BACK BUTTON */}
-        <button className="btn btn-sm mb-5" onClick={() => navigate("/tutors")}>
-          ← Back to Tutors
+        <button className="btn btn-sm mb-5 bg-red-400" onClick={() => navigate("/dashboard/tutors")}>
+          ← Back to Tutors list
         </button>
 
         {/* HEADER */}
