@@ -165,7 +165,7 @@ const TuitionManagement = () => {
                             <td className="text-right space-x-2">
                                 <button
                                     className="btn btn-xs"
-                                    onClick={() => navigate(`/dashboard/tuitions/${t._id}`)}
+                                    onClick={() => navigate(`/dashboard/admin/tuitions/${t._id}`)}
                                 >
                                     View
                                 </button>

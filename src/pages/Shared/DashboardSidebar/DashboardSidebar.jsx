@@ -1,66 +1,109 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
     HiHome,
     HiChevronDoubleLeft,
     HiChevronDoubleRight,
     HiLogout,
+    HiAcademicCap,
 } from "react-icons/hi";
 import { FaAngleRight, FaBook, FaUserGraduate, FaUsersCog } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { SiBookmyshow } from "react-icons/si";
 
 import useAuth from "../../../hooks/useAuth";
 import useRole from "../../../hooks/useRole";
+import { MdEventAvailable } from "react-icons/md";
 
 const DashboardSidebar = ({ collapsed, setCollapsed }) => {
     const { logOut } = useAuth();
     const { role, status } = useRole();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogout = async () => {
         await logOut();
         navigate("/auth/login");
     };
 
-    const location = useLocation();
-    const isTuitionDetailsPage =
-        location.pathname.startsWith("/dashboard/tuitions/") &&
-        location.pathname !== "/dashboard/tuitions";
 
+    // Matches: /dashboard/tuitions/T0010
+    const isTuitionSelected =
+        /^\/dashboard\/tuitions\/T\d+$/.test(location.pathname);
+
+    // Matches: /dashboard/tuitions/693953be24b83f1b7d047e1e
+    const isTuitionDetailsPage =
+        /^\/dashboard\/admin\/tuitions\/[a-fA-F0-9]{24}$/.test(location.pathname);
+
+
+    // ✅ STUDENT – detect analytics sub page correctly
+    const isMyTuitionsAnalytics =
+        location.pathname.startsWith("/dashboard/my-tuitions/") &&
+        location.pathname.includes("/analytics");
 
     return (
         <aside
-            className={`bg-white shadow-lg transition-all duration-300 flex flex-col
-        ${collapsed ? "w-16" : "w-64"}
-      `}
+            className={`bg-white shadow-lg transition-all duration-300 flex flex-col ${collapsed ? "w-16" : "w-64"
+                }`}
         >
             {/* HEADER */}
             <div className="h-16 flex items-center justify-between px-3 border-b">
                 {!collapsed && (
-                    <h2 className="text-pink-600 font-bold text-xl">
-                        eTuitionBd
-                    </h2>
+                    <h2 className="text-pink-600 font-bold text-xl">eTuitionBd</h2>
                 )}
 
                 <button
                     onClick={() => setCollapsed(!collapsed)}
                     className="p-1 rounded-full hover:bg-gray-200"
                 >
-                    {collapsed ? (
-                        <HiChevronDoubleRight size={18} />
-                    ) : (
-                        <HiChevronDoubleLeft size={18} />
-                    )}
+                    {collapsed ? <HiChevronDoubleRight /> : <HiChevronDoubleLeft />}
                 </button>
             </div>
 
             {/* MENU */}
             <ul className="p-3 space-y-2 flex-1">
-
                 {/* STUDENT */}
                 {role === "student" && (
                     <>
                         <NavItem to="/dashboard" icon={<HiHome />} text="Home" collapsed={collapsed} />
                         <NavItem to="/dashboard/post-tuition" icon={<FaBook />} text="Post Tuition" collapsed={collapsed} />
+
+                        {/* MAIN */}
+                        <NavItem
+                            to="/dashboard/my-tuitions"
+                            icon={<SiBookmyshow />}
+                            text="My Tuitions"
+                            collapsed={collapsed}
+                        />
+
+                        {/* ✅ SUB MENU */}
+                        {isMyTuitionsAnalytics && (
+                            <div className="ml-10 mt-1">
+                                <NavItem
+                                    to={location.pathname}
+                                    icon={<FaAngleRight />}
+                                    text="Tuition Analytics"
+                                    collapsed={collapsed}
+                                    isSub
+                                />
+                            </div>
+                        )}
+
+                        <NavItem to="/dashboard/available-tuitions" icon={<MdEventAvailable />} text="Available Tuitions" collapsed={collapsed} />
+
+                        {role === "student" && isTuitionSelected && (
+                            <div className="ml-10 mt-1">
+                                <NavItem
+                                    to={location.pathname}
+                                    icon={<FaAngleRight />}
+                                    text="Selected Tuition"
+                                    collapsed={collapsed}
+                                    isSub
+                                />
+                            </div>
+                        )}
+
+
+                        <NavItem to="/dashboard/tutors" icon={<HiAcademicCap />} text="Available Tutors" collapsed={collapsed} />
+
                         <NavItem to="/dashboard/profile" icon={<FaUserGraduate />} text="Profile" collapsed={collapsed} />
                     </>
                 )}
@@ -95,37 +138,38 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                         )}
 
                         {/* ✅ Approved Admin */}
-{status === "approved" && (
-  <>
-    <NavItem
-      to="/dashboard/users"
-      icon={<FaUsersCog />}
-      text="Users"
-      collapsed={collapsed}
-    />
+                        {status === "approved" && (
+                            <>
+                                <NavItem
+                                    to="admin/users"
+                                    icon={<FaUsersCog />}
+                                    text="Users"
+                                    collapsed={collapsed}
+                                />
 
-    {/* ===== TUITIONS MAIN ===== */}
-    <NavItem
-      to="/dashboard/tuitions"
-      icon={<FaBook />}
-      text="Tuitions"
-      collapsed={collapsed}
-    />
+                                {/* ===== TUITIONS MAIN ===== */}
+                                <NavItem
+                                    to="admin/tuitions"
+                                    icon={<FaBook />}
+                                    text="Tuitions"
+                                    collapsed={collapsed}
+                                />
 
-    {/* ===== SHOW ONLY ON VIEW PAGE ===== */}
-    {isTuitionDetailsPage && (
-      <div className="ml-10 mt-1">
-        <NavItem
-          to={location.pathname}
-          icon={<FaAngleRight />}
-          text="Tuition Details"
-          collapsed={collapsed}
-          isSub
-        />
-      </div>
-    )}
-  </>
-)}
+                                {/* ===== SHOW ONLY ON VIEW PAGE ===== */}
+                                {role === "admin" && status === "approved" && isTuitionDetailsPage && (
+                                    <div className="ml-10 mt-1">
+                                        <NavItem
+                                            to={location.pathname}
+                                            icon={<FaAngleRight />}
+                                            text="Tuition Details"
+                                            collapsed={collapsed}
+                                            isSub
+                                        />
+                                    </div>
+                                )}
+
+                            </>
+                        )}
 
 
                     </>
@@ -139,7 +183,7 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                     onClick={handleLogout}
                     className="flex items-center gap-3 w-full p-2 rounded hover:bg-red-100 text-red-600"
                 >
-                    <HiLogout size={20} />
+                    <HiLogout />
                     {!collapsed && <span>Logout</span>}
                 </button>
             </div>
@@ -147,13 +191,9 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
     );
 };
 
-/* SMALL HELPER COMPONENT */
 const NavItem = ({ to, icon, text, collapsed }) => (
     <li>
-        <NavLink
-            to={to}
-            className="flex items-center gap-3 p-2 rounded hover:bg-pink-100"
-        >
+        <NavLink to={to} className="flex items-center gap-3 p-2 rounded hover:bg-pink-100">
             {icon}
             {!collapsed && <span>{text}</span>}
         </NavLink>

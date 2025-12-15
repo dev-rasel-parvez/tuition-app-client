@@ -31,6 +31,8 @@ import Forbidden from "../components/common/Forbidden";
 import AdminRegister from "../pages/Auth/AdminRegister/AdminRegister";
 import TuitionManagement from "../pages/UserType/Admin/TuitionManagement";
 import TuitionDetailsPage from "../pages/UserType/Admin/TuitionDetailsPage ";
+import MyTuitions from "../pages/UserType/Student/MyTuitions";
+import TuitionAnalyticsPage from "../pages/UserType/Student/TuitionAnalytics/TuitionAnalyticsPage";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +59,45 @@ const router = createBrowserRouter([
     ],
   },
 
+
+  // {
+  //   path: "/dashboard",
+  //   element: (
+  //     <PrivateRoute>
+  //       <DashboardLayout />
+  //     </PrivateRoute>
+  //   ),
+  //   children: [
+  //     { index: true, element: <DashboardHome /> },
+
+  //     { path: "available-tuitions", element: <AvailableTuitions /> },
+  //     { path: "tuitions/:tuitionId", element: <TuitionDetails /> },
+  //     { path: "tuitions/:id", element: <TuitionDetailsPage /> },
+  //     { path: "tutors", element: <Tutors /> },
+  //     { path: "tutors/:id", element: <TutorDetails /> },
+
+  //     // ===== STUDENT =====
+  //     { path: "post-tuition", element: <PostTuition /> },
+  //     { path: "profile", element: <StudentProfile /> },
+  //     { path: "my-tuitions", element: <MyTuitions /> },
+
+  //     // ✅ ANALYTICS (nested under My Tuitions)
+  //     {
+  //       path: "my-tuitions/:tuitionId/analytics",
+  //       element: <TuitionAnalyticsPage />,
+  //     },
+
+  //     // ===== TUTOR =====
+  //     { path: "tutor/applications", element: <MyApplications /> },
+  //     { path: "tutor/profile", element: <TutorProfile /> },
+
+  //     // ===== ADMIN =====
+  //     { path: "users", element: <UserManagement /> },
+  //     { path: "tuitions", element: <TuitionManagement /> },
+  //     { path: "tuitions/:id", element: <TuitionDetailsPage /> },
+  //   ],
+  // },
+
   {
     path: "/dashboard",
     element: (
@@ -66,17 +107,46 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <DashboardHome /> },
+
+      // ======================
+      // PUBLIC / COMMON
+      // ======================
+      { path: "available-tuitions", element: <AvailableTuitions /> },
+
+      // Student / Tutor view (by tuitionId like T0001)
+      { path: "tuitions/:tuitionId", element: <TuitionDetails /> },
+
+      { path: "tutors", element: <Tutors /> },
+      { path: "tutors/:id", element: <TutorDetails /> },
+
+      // ======================
+      // STUDENT
+      // ======================
       { path: "post-tuition", element: <PostTuition /> },
       { path: "profile", element: <StudentProfile /> },
+      { path: "my-tuitions", element: <MyTuitions /> },
+
+      {
+        path: "my-tuitions/:tuitionId/analytics",
+        element: <TuitionAnalyticsPage />,
+      },
+
+      // ======================
+      // TUTOR
+      // ======================
       { path: "tutor/applications", element: <MyApplications /> },
       { path: "tutor/profile", element: <TutorProfile /> },
-      { path: "users", element: <UserManagement /> },
-      { path: "tuitions", element: <TuitionManagement /> },
-      { path: "tuitions/:id",element: <TuitionDetailsPage />,
-      },
+
+      // ======================
+      // ADMIN (NAMESPACE FIX)
+      // ======================
+      { path: "admin/users", element: <UserManagement /> },
+      { path: "admin/tuitions", element: <TuitionManagement /> },
+
+      // Admin tuition details (by Mongo _id)
+      { path: "admin/tuitions/:id", element: <TuitionDetailsPage /> },
     ],
   },
-
   { path: "/forbidden", element: <Forbidden /> },
 ]);
 

@@ -97,7 +97,7 @@ const AvailableTuitions = () => {
       return;
     }
 
-    navigate(`/tuitions/${tuitionId}`);
+    navigate(`/dashboard/tuitions/${tuitionId}`);
   };
 
   return (

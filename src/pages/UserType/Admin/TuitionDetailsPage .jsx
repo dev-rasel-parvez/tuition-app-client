@@ -25,6 +25,8 @@ const TuitionDetailsPage  = () => {
 
   if (!tuition) return <p>Loading...</p>;
 
+  console.log(tuition)
+
   return (
     <div className="space-y-6">
 
