@@ -72,9 +72,10 @@ const MyApplications = () => {
       <div className="grid md:grid-cols-3 gap-6">
         {applications.map(app => (
           <div key={app._id} className="bg-white p-5 rounded-xl shadow border">
-            <span className="text-xs px-3 py-1 rounded-full bg-yellow-100 text-yellow-700">
+            <span className={`text-xs px-3 py-1 rounded-full ${app.status.toLowerCase() === 'accepted' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
               {app.status.toUpperCase()}
             </span>
+
 
             <h3 className="font-bold text-lg mt-3">
               Class {app.tuition.class} – {app.tuition.subjects}

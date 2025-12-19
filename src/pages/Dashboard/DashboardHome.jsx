@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import useRole from "../../hooks/useRole";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
-
+import { MdOutlineEventAvailable } from "react-icons/md";
 import {
   FaBookOpen,
   FaUsers,
@@ -124,19 +124,25 @@ const DashboardHome = () => {
 
       {/* TUTOR DASHBOARD */}
       {role === "tutor" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card
             icon={<FaClipboardList />}
             title="My Applications"
             desc="View tuition applications"
             to="/dashboard/tutor/applications"
           />
+          <Card
+            icon={<MdOutlineEventAvailable />}
+            title="Available Tuitions"
+            desc="Available Tuitions"
+            to="/dashboard/available-tuitions"
+          />
 
           <Card
             icon={<FaGraduationCap />}
             title="My Profile"
             desc="Update tutor profile"
-            to="/dashboard/tutor/profile"
+            to="/dashboard/profile"
           />
         </div>
       )}

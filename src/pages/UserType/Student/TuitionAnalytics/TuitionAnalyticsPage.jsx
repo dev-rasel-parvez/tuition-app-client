@@ -26,9 +26,76 @@ const TuitionAnalyticsPage = () => {
     setApplications(res.data);
   };
 
+  const handlePaymentSuccess = () => {
+    setApplications(prev =>
+      prev.filter(app => app._id !== selectedTutor._id)
+    );
+    setSelectedTutor(null);
+  };
+
   useEffect(() => {
     loadApplications();
   }, [tuitionId]);
+
+
+
+  // ============================
+  // ACCEPT HANDLER
+  // ============================
+  const handleAccept = async (applicationId) => {
+    const confirm = await Swal.fire({
+      title: "Accept Tutor?",
+      text: "You will proceed to payment",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Accept & Pay",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await axiosSecure.patch(
+        `/student/applications/${applicationId}/accept`
+      );
+
+      Swal.fire("Accepted!", "Proceed to payment", "success");
+
+      setShowPayment(true);
+      setSelectedTutor(null);
+      loadApplications();
+    } catch (err) {
+      Swal.fire("Error", "Failed to accept tutor", "error");
+    }
+  };
+
+  // ============================
+  // REJECT HANDLER
+  // ============================
+  const handleReject = async (applicationId) => {
+    const confirm = await Swal.fire({
+      title: "Reject Tutor?",
+      text: "This tutor application will be rejected",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Reject",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await axiosSecure.patch(
+        `/student/applications/${applicationId}/reject`
+      );
+
+      Swal.fire("Rejected!", "Tutor rejected successfully", "success");
+
+      setSelectedTutor(null);
+      loadApplications();
+    } catch (err) {
+      Swal.fire("Error", "Failed to reject tutor", "error");
+    }
+  };
+
 
   // ============================
   // FILTER LOGIC
@@ -161,16 +228,23 @@ const TuitionAnalyticsPage = () => {
         <TutorDetailsModal
           app={selectedTutor}
           close={() => setSelectedTutor(null)}
+          onAccept={handleAccept}   // ✅ correct
+          onReject={handleReject}   // ✅ THIS WAS MISSING / WRONG
+          onContact={() => setShowPayment(true)}
         />
       )}
+
 
       {/* PAYMENT */}
       {showPayment && (
         <PaymentModal
-          tuitionId={tuitionId}
+          applicationId={selectedTutor._id}
           close={() => setShowPayment(false)}
+          onSuccess={handlePaymentSuccess}
         />
       )}
+
+
     </div>
   );
 };

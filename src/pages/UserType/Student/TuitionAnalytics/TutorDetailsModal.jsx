@@ -1,25 +1,36 @@
 import { FaTimes } from "react-icons/fa";
 
-const maskPhone = phone =>
-  phone ? phone.replace(/(\+880\d{3})\d{4}(\d{2})/, "$1****$2") : "";
+const maskPhone = (phone) =>
+  phone ? phone.replace(/(\+880\d{3})\d{4}(\d{2})/, "$1****$2") : "Hidden";
 
-const maskEmail = email =>
-  email ? email.replace(/(.{2}).+(@.+)/, "$1****$2") : "";
+const maskEmail = (email) =>
+  email ? email.replace(/(.{2}).+(@.+)/, "$1****$2") : "Hidden";
 
-const TutorDetailsModal = ({ app, close, onAccept, onReject, onContact }) => {
-  const { tutor } = app;
+const TutorDetailsModal = ({
+  app,
+  close,
+  onAccept = () => {},
+  onReject = () => {},
+  onContact = () => {},
+}) => {
+  if (!app) return null;
+
+  const { tutor, status } = app;
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
       <div className="bg-white w-full max-w-md rounded-2xl p-6 relative">
 
+        {/* CLOSE */}
         <button onClick={close} className="absolute right-4 top-4">
           <FaTimes />
         </button>
 
+        {/* AVATAR */}
         <img
           src={tutor.photoURL}
           className="w-24 h-24 rounded-full mx-auto"
+          alt={tutor.name}
         />
 
         <h2 className="text-xl font-bold text-center mt-3">
@@ -33,6 +44,7 @@ const TutorDetailsModal = ({ app, close, onAccept, onReject, onContact }) => {
         <div className="mt-4 text-sm space-y-1">
           <p>Experience: {tutor.experience} years</p>
           <p>Expected Salary: {tutor.expectedSalary} TK</p>
+          <p>Status: <b>{status}</b></p>
         </div>
 
         <hr className="my-4" />
@@ -42,21 +54,23 @@ const TutorDetailsModal = ({ app, close, onAccept, onReject, onContact }) => {
           <p>📧 {maskEmail(tutor.email)}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 mt-6">
-          <button
-            className="btn btn-error"
-            onClick={() => onReject(app._id)}
-          >
-            ❌ Reject
-          </button>
+        {status === "pending" && (
+          <div className="grid grid-cols-2 gap-3 mt-6">
+            <button
+              className="btn btn-error"
+              onClick={() => onReject(app._id)}
+            >
+              ❌ Reject
+            </button>
 
-          <button
-            className="btn btn-success"
-            onClick={() => onAccept(app._id)}
-          >
-            ✅ Accept
-          </button>
-        </div>
+            <button
+              className="btn btn-success"
+              onClick={() => onAccept(app._id)}
+            >
+              ✅ Accept
+            </button>
+          </div>
+        )}
 
         <button
           className="btn btn-outline w-full mt-3"

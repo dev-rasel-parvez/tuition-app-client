@@ -33,6 +33,7 @@ import MyTuitions from "../pages/UserType/Student/MyTuitions";
 import TuitionAnalyticsPage from "../pages/UserType/Student/TuitionAnalytics/TuitionAnalyticsPage";
 import Profile from "../pages/Dashboard/Profile/Profile";
 import ProfileEdit from "../pages/Dashboard/Profile/ProfileEdit";
+import PaymentHistory from "../pages/UserType/Student/TuitionAnalytics/PaymentHistory";
 
 const router = createBrowserRouter([
   {
@@ -86,6 +87,9 @@ const router = createBrowserRouter([
 
       {
         path: "my-tuitions/:tuitionId/analytics", element: <TuitionAnalyticsPage />,
+      },
+      {
+        path: "payment-history", element: <PaymentHistory />,
       },
 
       // ======================
