@@ -3,17 +3,19 @@ import useAxiosSecure from "../../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
-const PaymentModal = ({ applicationId, close, onSuccess }) => {
+const PaymentModal = ({ applicationId, amount, close, onSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
-const handlePayment = async () => {
-  if (!stripe || !elements) return;
+  const handlePayment = async () => {
+    if (!stripe || !elements) return;
 
-  try {
-    const { data } = await axiosSecure.post("/payments/create-intent");
+    // 🔥 SEND AMOUNT TO SERVER
+    const { data } = await axiosSecure.post("/payments/create-intent", {
+      amount,
+    });
 
     const { paymentIntent, error } =
       await stripe.confirmCardPayment(data.clientSecret, {
@@ -31,7 +33,7 @@ const handlePayment = async () => {
       await axiosSecure.post("/payments/confirm", {
         applicationId,
         paymentIntentId: paymentIntent.id,
-        amount: paymentIntent.amount / 100,
+        amount,
       });
 
       onSuccess();
@@ -39,25 +41,28 @@ const handlePayment = async () => {
       Swal.fire({
         icon: "success",
         title: "Tutor Hired Successfully!",
-        timer: 2000,
+        html: `
+          <p>Status changed to <b>Approved</b></p>
+          <p>Other tutors automatically rejected</p>
+        `,
+        timer: 3000,
         showConfirmButton: false,
       });
 
       setTimeout(() => {
         close();
         navigate("/dashboard/payment-history");
-      }, 2000);
+      }, 3000);
     }
-  } catch (err) {
-    Swal.fire("Error", "Payment processing failed", "error");
-  }
-};
-
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-xl w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Pay 1000 TK</h2>
+        {/* 🔥 DYNAMIC AMOUNT */}
+        <h2 className="text-xl font-bold mb-4">
+          Pay {amount} TK
+        </h2>
 
         <CardElement className="p-3 border rounded" />
 

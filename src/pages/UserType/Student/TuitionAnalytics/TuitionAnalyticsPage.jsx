@@ -150,7 +150,7 @@ const TuitionAnalyticsPage = () => {
         </button>
       </div>
 
-      
+
       {/* FILTER SUMMARY */}
       {Object.keys(filters).length > 0 && (
         <div className="mb-6">
@@ -256,10 +256,12 @@ const TuitionAnalyticsPage = () => {
       {showPayment && selectedTutor && (
         <PaymentModal
           applicationId={selectedTutor._id}
+          amount={Number(selectedTutor.tutor.expectedSalary)} // 🔥 ADD THIS
           close={() => setShowPayment(false)}
           onSuccess={handlePaymentSuccess}
         />
       )}
+
     </div>
   );
 };
