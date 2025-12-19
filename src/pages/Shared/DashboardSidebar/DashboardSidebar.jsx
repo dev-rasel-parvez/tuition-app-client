@@ -1,4 +1,5 @@
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { IoAnalyticsOutline } from "react-icons/io5";
 import {
     HiHome,
     HiChevronDoubleLeft,
@@ -11,7 +12,7 @@ import { SiBookmyshow } from "react-icons/si";
 
 import useAuth from "../../../hooks/useAuth";
 import useRole from "../../../hooks/useRole";
-import { MdEventAvailable } from "react-icons/md";
+import { MdCallMissedOutgoing, MdEventAvailable, MdOutlineAttachMoney, MdOutlinePayments } from "react-icons/md";
 
 const DashboardSidebar = ({ collapsed, setCollapsed }) => {
     const { logOut } = useAuth();
@@ -104,6 +105,8 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
 
                         <NavItem to="/dashboard/tutors" icon={<HiAcademicCap />} text="Available Tutors" collapsed={collapsed} />
 
+                        <NavItem to="/dashboard/payment-history" icon={<MdOutlinePayments />} text="Payment History" collapsed={collapsed} />
+
                         <NavItem to="/dashboard/profile" icon={<FaUserGraduate />} text="Profile" collapsed={collapsed} />
                     </>
                 )}
@@ -129,6 +132,10 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                             </div>
                         )}
 
+
+                        <NavItem to="/dashboard/ongoing-tuitions" icon={<MdCallMissedOutgoing />} text="Ongoing Tuitions" collapsed={collapsed} />
+
+                        <NavItem to="/dashboard/tutor/revenue-history" icon={<MdOutlineAttachMoney />} text="Revenue History" collapsed={collapsed} />
 
                         <NavItem to="/dashboard/tutors" icon={<HiAcademicCap />} text="Available Tutors" collapsed={collapsed} />
 
@@ -193,6 +200,8 @@ const DashboardSidebar = ({ collapsed, setCollapsed }) => {
                                     </div>
                                 )}
 
+                                <NavItem to="/dashboard/reports-analytics" icon={<IoAnalyticsOutline />} text="Analytics" collapsed={collapsed} />
+                                
                                 <NavItem to="/dashboard/profile" icon={<FaUserGraduate />} text="Profile" collapsed={collapsed} />
 
                             </>

@@ -9,9 +9,10 @@ const PaymentModal = ({ applicationId, close, onSuccess }) => {
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
-  const handlePayment = async () => {
-    if (!stripe || !elements) return;
+const handlePayment = async () => {
+  if (!stripe || !elements) return;
 
+  try {
     const { data } = await axiosSecure.post("/payments/create-intent");
 
     const { paymentIntent, error } =
@@ -33,26 +34,25 @@ const PaymentModal = ({ applicationId, close, onSuccess }) => {
         amount: paymentIntent.amount / 100,
       });
 
-      onSuccess(); // 🔥 REMOVE FROM ANALYTICS PAGE
+      onSuccess();
 
       Swal.fire({
         icon: "success",
         title: "Tutor Hired Successfully!",
-        html: `
-          <p>Status changed to <b>Approved</b></p>
-          <p>Other tutors automatically rejected</p>
-          <p class="mt-2 text-sm">Redirecting to payment history...</p>
-        `,
-        timer: 3000,
+        timer: 2000,
         showConfirmButton: false,
       });
 
       setTimeout(() => {
         close();
         navigate("/dashboard/payment-history");
-      }, 3000);
+      }, 2000);
     }
-  };
+  } catch (err) {
+    Swal.fire("Error", "Payment processing failed", "error");
+  }
+};
+
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">

@@ -22,7 +22,7 @@ const PaymentHistory = () => {
         <thead>
           <tr>
             <th>Date</th>
-            <th>Tutor</th>
+            <th>Hire Tutor</th>
             <th>Amount</th>
             <th>Payment ID</th>
           </tr>

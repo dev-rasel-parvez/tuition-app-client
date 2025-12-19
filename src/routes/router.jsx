@@ -34,6 +34,9 @@ import TuitionAnalyticsPage from "../pages/UserType/Student/TuitionAnalytics/Tui
 import Profile from "../pages/Dashboard/Profile/Profile";
 import ProfileEdit from "../pages/Dashboard/Profile/ProfileEdit";
 import PaymentHistory from "../pages/UserType/Student/TuitionAnalytics/PaymentHistory";
+import OngoingTuitions from "../pages/UserType/Tutors/OngoingTuitions";
+import RevenueHistory from "../pages/UserType/Tutors/RevenueHistory";
+import ReportsAnalytics from "../pages/UserType/Admin/ReportsAnalytics";
 
 const router = createBrowserRouter([
   {
@@ -97,6 +100,11 @@ const router = createBrowserRouter([
       // ======================
       { path: "tutor/applications", element: <MyApplications /> },
 
+      { path: "ongoing-tuitions", element: <OngoingTuitions /> },
+
+      { path: "tutor/revenue-history", element: <RevenueHistory /> },
+      
+
       // ======================
       // ADMIN (NAMESPACE FIX)
       // ======================
@@ -105,6 +113,8 @@ const router = createBrowserRouter([
 
       // Admin tuition details (by Mongo _id)
       { path: "admin/tuitions/:id", element: <TuitionDetailsPage /> },
+
+      { path: "reports-analytics", element: <ReportsAnalytics /> },
     ],
   },
   { path: "/forbidden", element: <Forbidden /> },

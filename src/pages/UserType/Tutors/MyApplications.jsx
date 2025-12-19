@@ -42,8 +42,8 @@ const MyApplications = () => {
     const { value } = await Swal.fire({
       title: "Edit Application",
       html: `
-        <input id="exp" class="swal2-input" value="${app.tutor.experience}">
-        <input id="salary" class="swal2-input" value="${app.tutor.expectedSalary}">
+        <input id="exp" class="swal2-input" placeholder="Experience" value="${app.tutor.experience}">
+        <input id="salary" placeholder="Expected Salary" class="swal2-input" value="${app.tutor.expectedSalary}">
       `,
       preConfirm: () => {
         return {
@@ -72,14 +72,21 @@ const MyApplications = () => {
       <div className="grid md:grid-cols-3 gap-6">
         {applications.map(app => (
           <div key={app._id} className="bg-white p-5 rounded-xl shadow border">
-            <span className={`text-xs px-3 py-1 rounded-full ${app.status.toLowerCase() === 'accepted' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+            <span className={`text-xs px-3 py-1 rounded-full ${app.status.toLowerCase() === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
               {app.status.toUpperCase()}
             </span>
 
-
-            <h3 className="font-bold text-lg mt-3">
-              Class {app.tuition.class} – {app.tuition.subjects}
+            <h3 className="font-bold text-lg mt-2 ">
+               {app.tuition.title} 
             </h3>
+
+            <h3 className="font-bold text-lg">
+              Class: {app.tuition.class}
+            </h3>
+            <h3 className="font-bold text-lg ">
+              Subjects: {app.tuition.subjects}
+            </h3>
+
 
             <p className="text-sm">Location: {app.tuition.location}</p>
             <p className="text-sm">Budget: {app.tuition.budget} TK</p>

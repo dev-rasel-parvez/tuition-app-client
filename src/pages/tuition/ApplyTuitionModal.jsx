@@ -1,8 +1,11 @@
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import { useNavigate } from "react-router-dom";
+
 
 const ApplyTuitionModal = ({ tuition, profile, close }) => {
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,9 +34,18 @@ const ApplyTuitionModal = ({ tuition, profile, close }) => {
           icon: "success",
           title: "Application Submitted",
           text: "Your application is now pending.",
+          confirmButtonText: "OK",
+          timer: 5000, // 5 seconds
+          timerProgressBar: true,
+        }).then((result) => {
+          // Redirect if OK clicked OR timer finished
+          if (result.isConfirmed || result.dismiss === Swal.DismissReason.timer) {
+            close();
+            navigate("/dashboard/tutor/applications");
+          }
         });
-        close();
-      } else {
+      }
+      else {
         Swal.fire({
           icon: "info",
           title: "Already Applied",

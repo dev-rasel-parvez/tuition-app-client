@@ -108,17 +108,14 @@ const DashboardHome = () => {
             to="/dashboard/admin/tuitions"
           />
 
-          <div className="bg-white rounded-xl shadow p-6 flex items-start gap-4">
-            <div className="text-3xl text-green-600">
-              <FaChartBar />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold">Platform Overview</h3>
-              <p className="text-gray-500 text-sm">
-                Monitor system activity
-              </p>
-            </div>
-          </div>
+          <Card
+          
+            icon={<FaChartBar />}
+            title="Platform Overview"
+            desc="Monitor system activity"
+            to="/dashboard/reports-analytics"
+          />
+
         </div>
       )}
 

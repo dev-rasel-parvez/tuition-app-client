@@ -26,46 +26,25 @@ const TuitionAnalyticsPage = () => {
     setApplications(res.data);
   };
 
-  const handlePaymentSuccess = () => {
-    setApplications(prev =>
-      prev.filter(app => app._id !== selectedTutor._id)
-    );
-    setSelectedTutor(null);
-  };
-
   useEffect(() => {
     loadApplications();
   }, [tuitionId]);
 
-
+  // ============================
+  // PAYMENT SUCCESS
+  // ============================
+  const handlePaymentSuccess = () => {
+    setShowPayment(false);
+    setSelectedTutor(null);
+    loadApplications();
+  };
 
   // ============================
   // ACCEPT HANDLER
   // ============================
-  const handleAccept = async (applicationId) => {
-    const confirm = await Swal.fire({
-      title: "Accept Tutor?",
-      text: "You will proceed to payment",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Accept & Pay",
-    });
-
-    if (!confirm.isConfirmed) return;
-
-    try {
-      await axiosSecure.patch(
-        `/student/applications/${applicationId}/accept`
-      );
-
-      Swal.fire("Accepted!", "Proceed to payment", "success");
-
-      setShowPayment(true);
-      setSelectedTutor(null);
-      loadApplications();
-    } catch (err) {
-      Swal.fire("Error", "Failed to accept tutor", "error");
-    }
+  const handleAccept = (application) => {
+    setSelectedTutor(application);
+    setShowPayment(true);
   };
 
   // ============================
@@ -86,9 +65,7 @@ const TuitionAnalyticsPage = () => {
       await axiosSecure.patch(
         `/student/applications/${applicationId}/reject`
       );
-
       Swal.fire("Rejected!", "Tutor rejected successfully", "success");
-
       setSelectedTutor(null);
       loadApplications();
     } catch (err) {
@@ -96,17 +73,29 @@ const TuitionAnalyticsPage = () => {
     }
   };
 
-
   // ============================
   // FILTER LOGIC
   // ============================
-  const filteredApplications = applications.filter(app => {
+  const filteredApplications = applications.filter((app) => {
     const t = app.tutor;
 
-    if (filters.university && !t.university?.toLowerCase().includes(filters.university.toLowerCase())) return false;
-    if (filters.department && !t.department?.toLowerCase().includes(filters.department.toLowerCase())) return false;
-    if (filters.experience && Number(t.experience) < Number(filters.experience)) return false;
-    if (filters.runningYear && t.runningYear !== filters.runningYear) return false;
+    if (
+      filters.university &&
+      !t.university?.toLowerCase().includes(filters.university.toLowerCase())
+    )
+      return false;
+    if (
+      filters.department &&
+      !t.department?.toLowerCase().includes(filters.department.toLowerCase())
+    )
+      return false;
+    if (
+      filters.experience &&
+      Number(t.experience) < Number(filters.experience)
+    )
+      return false;
+    if (filters.runningYear && t.runningYear !== filters.runningYear)
+      return false;
     if (filters.ssc && String(t.ssc) !== filters.ssc) return false;
     if (filters.hsc && String(t.hsc) !== filters.hsc) return false;
 
@@ -114,17 +103,31 @@ const TuitionAnalyticsPage = () => {
   });
 
   // ============================
-  // REMOVE SINGLE FILTER
+  // CORE STATUS LOGIC
   // ============================
-  const removeFilter = key => {
+  const approvedApplication = filteredApplications.find(
+    (app) => app.status === "approved"
+  );
+
+  const visibleApplications = approvedApplication
+    ? [approvedApplication]
+    : filteredApplications.filter((app) => app.status === "pending");
+
+  const hasApproved = !!approvedApplication;
+
+  const pendingCount = filteredApplications.filter(
+    (app) => app.status === "pending"
+  ).length;
+
+  // ============================
+  // FILTER UI HELPERS
+  // ============================
+  const removeFilter = (key) => {
     const updated = { ...filters };
     delete updated[key];
     setFilters(updated);
   };
 
-  // ============================
-  // CLEAR ALL
-  // ============================
   const clearAllFilters = () => {
     setFilters({});
   };
@@ -133,23 +136,24 @@ const TuitionAnalyticsPage = () => {
     <div className="p-8">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-3xl font-bold">Tuition Analytics</h2>
+        <h2 className="text-3xl font-bold flex items-center gap-3">
+          Tuition Analytics
+          {!hasApproved && (
+            <span className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
+              {pendingCount} Tutor Applied
+            </span>
+          )}
+        </h2>
 
-        <button
-          className="btn btn-outline"
-          onClick={() => setShowFilter(true)}
-        >
+        <button className="btn btn-outline" onClick={() => setShowFilter(true)}>
           <FaFilter /> Filters
         </button>
       </div>
 
+      
       {/* FILTER SUMMARY */}
       {Object.keys(filters).length > 0 && (
         <div className="mb-6">
-          <p className="font-semibold mb-2">
-            Tutors Found: {filteredApplications.length}
-          </p>
-
           <div className="flex flex-wrap gap-2 items-center">
             {Object.entries(filters).map(([key, value]) => (
               <span
@@ -176,31 +180,45 @@ const TuitionAnalyticsPage = () => {
         </div>
       )}
 
-      {/* CARDS */}
+      {/* APPLICATION CARDS */}
       <div className="grid md:grid-cols-3 gap-6">
-        {filteredApplications.map(app => (
+        {visibleApplications.map((app) => (
           <div
             key={app._id}
-            className="bg-white p-5 rounded-xl shadow hover:shadow-lg cursor-pointer"
+            className="relative bg-white p-5 rounded-xl shadow hover:shadow-lg cursor-pointer"
             onClick={() => setSelectedTutor(app)}
           >
+            {app.status === "approved" && (
+              <span className="absolute top-3 right-3 bg-green-600 text-white text-xs px-3 py-1 rounded-full">
+                Approved
+              </span>
+            )}
+
             <p className="text-sm text-gray-400">#{app.tutor.serial}</p>
 
             <img
               src={app.tutor.photoURL}
               className="w-20 h-20 rounded-full mx-auto"
+              alt=""
             />
 
-            <h3 className="text-center font-bold mt-2">
-              {app.tutor.name}
+            <h3 className="text-md text-center mt-3">
+              <span className="font-bold">Name:</span> {app.tutor.name}
             </h3>
 
-            <p className="text-center text-sm">
-              {app.tutor.university} – {app.tutor.department}
+            <p className="text-md text-center">
+              <span className="font-bold">University:</span>{" "}
+              {app.tutor.university}
             </p>
 
-            <p className="text-center text-sm">
-              Experience: {app.tutor.experience} yrs
+            <p className="text-md text-center">
+              <span className="font-bold">Department:</span>{" "}
+              {app.tutor.department}
+            </p>
+
+            <p className="text-md text-center">
+              <span className="font-bold">Experience:</span>{" "}
+              {app.tutor.experience} yrs
             </p>
 
             <p className="text-center font-semibold">
@@ -223,28 +241,25 @@ const TuitionAnalyticsPage = () => {
         />
       )}
 
-      {/* DETAILS */}
+      {/* DETAILS MODAL */}
       {selectedTutor && (
         <TutorDetailsModal
           app={selectedTutor}
           close={() => setSelectedTutor(null)}
-          onAccept={handleAccept}   // ✅ correct
-          onReject={handleReject}   // ✅ THIS WAS MISSING / WRONG
-          onContact={() => setShowPayment(true)}
+          onAccept={() => handleAccept(selectedTutor)}
+          onReject={handleReject}
+          onContact={() => handleAccept(selectedTutor)}
         />
       )}
 
-
-      {/* PAYMENT */}
-      {showPayment && (
+      {/* PAYMENT MODAL */}
+      {showPayment && selectedTutor && (
         <PaymentModal
           applicationId={selectedTutor._id}
           close={() => setShowPayment(false)}
           onSuccess={handlePaymentSuccess}
         />
       )}
-
-
     </div>
   );
 };
