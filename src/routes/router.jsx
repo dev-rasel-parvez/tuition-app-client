@@ -6,7 +6,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 import PrivateRoute from "./PrivateRoute";
 
-import Home from "../pages/Home/Home/Home";
+import Home from "../pages/Home/Home";
 import About from "../pages/About/About";
 import Contact from "../pages/Contact/Contact";
 
@@ -37,11 +37,13 @@ import PaymentHistory from "../pages/UserType/Student/TuitionAnalytics/PaymentHi
 import OngoingTuitions from "../pages/UserType/Tutors/OngoingTuitions";
 import RevenueHistory from "../pages/UserType/Tutors/RevenueHistory";
 import ReportsAnalytics from "../pages/UserType/Admin/ReportsAnalytics";
+import ErrorPage from "../pages/Error/Error";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Home /> },
       { path: "about", element: <About /> },

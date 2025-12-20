@@ -42,7 +42,7 @@ const Login = () => {
         <input {...register("password")} type="password" placeholder="Password" className="input" />
         <button className="btn btn-neutral">Login</button>
         <p>
-          New user? <Link to="/auth/register">Register</Link>
+          New user? <Link className="underline" to="/auth/register">Register</Link>
         </p>
       </form>
 

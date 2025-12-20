@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../../contexts/AuthContext/AuthContext";
 import { ThemeContext } from "../../../contexts/ThemeContext/ThemeContext";
-import ThemeSwitcher from "../../../contexts/ThemeContext/ThemeSwitcher";
 import { useContext } from "react";
 import { FaUserCircle } from "react-icons/fa";
 
@@ -43,9 +42,6 @@ const Navbar = () => {
 
       {/* RIGHT */}
       <div className="navbar-end gap-3">
-
-        {/* THEME SWITCH */}
-        <ThemeSwitcher />
 
         {user ? (
           <div className="dropdown dropdown-end">
