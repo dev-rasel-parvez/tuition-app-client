@@ -131,12 +131,12 @@ const PostTuition = () => {
 
             <label className="label mt-2 font-bold text-black">Running Year</label>
             <select {...register("runningYear")} className="select select-bordered w-full">
-              <option value="">Select Running Year</option>
-              <option>1st Year</option>
-              <option>2nd Year</option>
-              <option>3rd Year</option>
-              <option>4th Year</option>
-              <option>Masters</option>
+              <option className="bg-gray-100 font-bold" value="">Select Running Year</option>
+              <option className="bg-gray-100 font-bold" >1st Year</option>
+              <option className="bg-gray-100 font-bold">2nd Year</option>
+              <option className="bg-gray-100 font-bold">3rd Year</option>
+              <option className="bg-gray-100 font-bold">4th Year</option>
+              <option className="bg-gray-100 font-bold">Masters</option>
             </select>
 
             <label className="label mt-2 font-bold text-black">Years of Experience</label>
