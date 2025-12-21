@@ -35,7 +35,7 @@ const Footer = () => {
           </h3>
           <ul className="flex flex-col gap-2 text-sm">
             <Link className="hover:text-[var(--color-accent)]" to="/">Home</Link>
-            <Link className="hover:text-[var(--color-accent)]" to="/tuitions">Tuitions</Link>
+            <Link className="hover:text-[var(--color-accent)]" to="/available-tuitions">Tuitions</Link>
             <Link className="hover:text-[var(--color-accent)]" to="/tutors">Tutors</Link>
             <Link className="hover:text-[var(--color-accent)]" to="/dashboard">Dashboard</Link>
             <Link className="hover:text-[var(--color-accent)]" to="/contact">Contact</Link>

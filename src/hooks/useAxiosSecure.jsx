@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { getAuth } from "firebase/auth";
 
 const axiosSecure = axios.create({
-  baseURL: "https://tuition-app-server.vercel.app",
+  baseURL: "http://localhost:3000",
 });
 
 const useAxiosSecure = () => {

@@ -34,21 +34,6 @@ const LatestTuitions = () => {
           >
             {/* ================= HEADER (BLUE) ================= */}
             <div className="bg-blue-50 px-5 py-4 relative">
-              {/* MAIN APPLY BUTTON */}
-              {/* <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate("/auth/login");
-                }}
-                className="absolute top-4 right-4
-                           px-5 py-1.5 rounded-full text-sm font-semibold
-                           bg-green-600 text-white
-                           hover:bg-green-700 hover:scale-105
-                           active:scale-95
-                           transition-all duration-200 shadow"
-              >
-                Apply Now
-              </button> */}
 
               <h3 className="text-lg font-bold text-gray-900">
                 {t.title}
