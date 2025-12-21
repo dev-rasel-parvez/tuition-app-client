@@ -42,7 +42,7 @@ const PostTuition = () => {
 
   return (
     <div>
-      <h2 className="text-4xl font-bold mb-6">Post Your Tuition!</h2>
+      <h2 className="text-4xl font-bold text-black mb-6">Post Your Tuition!</h2>
 
       <form onSubmit={handleSubmit(handleTuitionPost)} className="space-y-10">
 
@@ -53,28 +53,28 @@ const PostTuition = () => {
           <div>
             <h3 className="text-2xl font-semibold mb-6">Tutor want for</h3>
 
-            <label className="label mt-2">Tuition Title</label>
+            <label className="label mt-2 font-bold text-black">Tuition Title</label>
             <input
               {...register("title")}
               placeholder="Example: Class 5 Bangla Tutor Needed"
               className="input input-bordered w-full"
             />
 
-            <label className="label mt-2">Class / Grade</label>
+            <label className="label mt-2 font-bold text-black">Class / Grade</label>
             <input
               {...register("class")}
               placeholder="Example: Class 5"
               className="input input-bordered w-full"
             />
 
-            <label className="label mt-2">Subject(s)</label>
+            <label className="label mt-2 font-bold text-black">Subject(s)</label>
             <input
               {...register("subjects")}
               placeholder="Bangla, Math, English"
               className="input input-bordered w-full"
             />
 
-            <label className="label mt-2">Budget (Monthly)</label>
+            <label className="label mt-2 font-bold text-black">Budget (Monthly)</label>
             <input
               type="number"
               {...register("budget")}
@@ -82,14 +82,14 @@ const PostTuition = () => {
               className="input input-bordered w-full"
             />
 
-            <label className="label mt-2">Location / Area</label>
+            <label className="label mt-2 font-bold text-black">Location / Area</label>
             <input
               {...register("location")}
               placeholder="Mirpur, Dhanmondi"
               className="input input-bordered w-full"
             />
 
-            <label className="label mt-2">Preferred Schedule</label>
+            <label className="label mt-2 font-bold text-black">Preferred Schedule</label>
             <input
               {...register("schedule")}
               placeholder="Example: 3 days/week, evening"
@@ -101,35 +101,35 @@ const PostTuition = () => {
           <div>
             <h3 className="text-2xl font-semibold mb-6">Tutor Requirements</h3>
 
-            <label className="label mt-2">SSC Result</label>
+            <label className="label mt-2 font-bold text-black">SSC Result</label>
             <input
               {...register("sscResult")}
               placeholder="Example: 4.50"
               className="input input-bordered w-full"
             />
 
-            <label className="label mt-2">HSC Result</label>
+            <label className="label mt-2 font-bold text-black">HSC Result</label>
             <input
               {...register("hscResult")}
               placeholder="Example: 4.75"
               className="input input-bordered w-full"
             />
 
-            <label className="label mt-2">University</label>
+            <label className="label mt-2 font-bold text-black">University</label>
             <input
               {...register("university")}
               placeholder="DU / BUET / NSU / AIUB"
               className="input input-bordered w-full"
             />
 
-            <label className="label mt-2">Department / Subject</label>
+            <label className="label mt-2 font-bold text-black">Department / Subject</label>
             <input
               {...register("uniSubject")}
               placeholder="CSE / English / BBA"
               className="input input-bordered w-full"
             />
 
-            <label className="label mt-2">Running Year</label>
+            <label className="label mt-2 font-bold text-black">Running Year</label>
             <select {...register("runningYear")} className="select select-bordered w-full">
               <option value="">Select Running Year</option>
               <option>1st Year</option>
@@ -139,7 +139,7 @@ const PostTuition = () => {
               <option>Masters</option>
             </select>
 
-            <label className="label mt-2">Years of Experience</label>
+            <label className="label mt-2 font-bold text-black">Years of Experience</label>
             <input
               type="number"
               {...register("experience")}
@@ -150,7 +150,7 @@ const PostTuition = () => {
         </div>
 
         <div>
-          <label className="label mt-2">Additional Notes (Optional)</label>
+          <label className="label mt-2 font-bold text-black text-black">Additional Notes (Optional)</label>
           <textarea
             {...register("notes")}
             placeholder="Any additional requirements..."
