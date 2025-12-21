@@ -31,7 +31,7 @@ const PaymentHistory = () => {
           {payments.map(p => (
             <tr key={p._id}>
               <td>{new Date(p.createdAt).toLocaleDateString()}</td>
-              <td>{p.tutorName}</td>
+              <td>{p.tutorName || "Unlock Tutor Contact Details"}</td>
               <td>{p.amount} TK</td>
               <td className="text-xs">{p.paymentIntentId}</td>
             </tr>
