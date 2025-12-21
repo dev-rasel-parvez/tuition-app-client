@@ -1,23 +1,12 @@
-:root {
-  --color-bg: #ffffff;
-  --color-bg-soft: #f5f5f5;
-  --color-text-primary: #1f1f1f;
-  --color-muted: #6b7280;
-}
-
-[data-theme="dark"] {
-  --color-bg: #0f172a;
-  --color-bg-soft: #1e293b;
-  --color-text-primary: #f1f5f9;
-  --color-muted: #94a3b8;
-}
-
-
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Urbanist:wght@100..900&display=swap");
 @import "tailwindcss";
+
+/* ============================= */
+/* DaisyUI setup */
+/* ============================= */
 @plugin "daisyui" {
-   themes: light --default;
-};
+  themes: light --default;
+}
 
 @plugin "daisyui/theme" {
   name: "light";
@@ -26,9 +15,88 @@
   --color-secondary: #03373D;
 }
 
+/* ============================= */
+/* 🔥 SYNC YOUR VARIABLES WITH DAISYUI */
+/* ============================= */
+:root {
+  --color-bg: hsl(var(--b1));
+  --color-bg-soft: hsl(var(--b2));
+  --color-text-primary: hsl(var(--bc));
+  --color-muted: hsl(var(--nc));
+}
+
+[data-theme="dark"] {
+  --color-bg: hsl(var(--b1));
+  --color-bg-soft: hsl(var(--b2));
+  --color-text-primary: hsl(var(--bc));
+  --color-muted: hsl(var(--nc));
+}
+
+/* ============================= */
+/* 🔥 GLOBAL TYPOGRAPHY (IMPORTANT) */
+/* ============================= */
+html {
+  font-size: 16px; /* Base size (1rem = 16px) */
+}
 
 body {
   font-family: "Urbanist", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
+  font-size: 1rem;        /* 16px */
+  font-weight: 500;       /* Stronger default */
+  line-height: 1.6;
+  color: hsl(var(--bc));
+  background-color: hsl(var(--b1));
+}
+
+/* ============================= */
+/* ✅ FORM VISIBILITY & SIZE FIX */
+/* ============================= */
+.input,
+.select,
+.textarea,
+.file-input {
+  background-color: hsl(var(--b1));
+  color: hsl(var(--bc));
+  border-color: hsl(var(--b3));
+
+  font-size: 1rem;        /* Bigger text */
+  font-weight: 500;
+  min-height: 3rem;       /* Bigger inputs */
+  padding-left: 0.9rem;
+  padding-right: 0.9rem;
+  border-width: 1.5px;
+}
+
+/* Placeholder clarity */
+.input::placeholder,
+.textarea::placeholder {
+  color: hsl(var(--nc));
+  opacity: 0.75;
+}
+
+/* ============================= */
+/* ✅ FOCUS STATES (ACCESSIBILITY) */
+/* ============================= */
+.input:focus,
+.select:focus,
+.textarea:focus,
+.file-input:focus {
+  outline: none;
+  border-color: hsl(var(--p));
+  box-shadow: 0 0 0 2px hsl(var(--p) / 0.25);
+}
+
+/* ============================= */
+/* ✅ HEADINGS IMPROVEMENT */
+/* ============================= */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  color: hsl(var(--bc));
+}
+
+/* ============================= */
+/* Small helper (optional but nice) */
+/* ============================= */
+.card {
+  color: hsl(var(--bc));
 }

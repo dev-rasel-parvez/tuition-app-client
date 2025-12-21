@@ -110,9 +110,9 @@ const Register = () => {
         <input {...register("email", { required: true })} placeholder="Email" className="input" />
         <input {...register("phone", { required: true })} placeholder="Phone" className="input" />
 
-        <select {...register("role")} className="select select-bordered">
-          <option value="student">Student / Guardian</option>
-          <option value="tutor">Tutor</option>
+        <select {...register("role")} className="select select-bordered ">
+          <option className="bg-gray-100 font-bold" value="student">Student / Guardian</option>
+          <option className="bg-gray-100 font-bold" value="tutor">Tutor</option>
         </select>
 
         {selectedRole === "tutor" && (
